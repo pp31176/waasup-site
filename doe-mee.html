@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="nl-BE">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lid of vrijwilliger worden – WaasUp</title>
+<meta name="description" content="Schrijf je in als lid of vrijwilliger van WaasUp en hoor als eerste wanneer een activiteit in Groot-Temse live gaat.">
+<meta property="og:title" content="Lid of vrijwilliger worden – WaasUp">
+<meta property="og:description" content="Schrijf je in als lid of vrijwilliger van WaasUp en hoor als eerste wanneer een activiteit in Groot-Temse live gaat.">
+<meta property="og:locale" content="nl_BE">
+<meta name="theme-color" content="#011737">
+<link rel="icon" href="images/vos-sleutel.png">
+<link rel="preload" href="assets/fonts/montserrat-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<a class="skip" href="#inhoud">Naar de inhoud</a>
+<header class="kop">
+  <div class="wrap">
+    <a class="logo" href="index.html" aria-label="WaasUp, naar de startpagina"><img src="images/logo-waasup.png" alt="WaasUp – Mensen, Ideeën, Temse" data-fallback="logo-tekst"></a>
+    <nav class="nav" aria-label="Hoofdmenu"><a class="item" href="activiteiten.html">Activiteiten</a><a class="item" href="jouw-straat.html">Jouw Straat in Kaart</a><a class="item" href="partners.html">Partners</a><a class="item" href="doe-mee.html" aria-current="page">Doe mee</a><a class="item" href="over.html">Over WaasUp</a>
+      <a class="btn btn-geel" href="doe-mee.html">Word lid</a>
+    </nav>
+    <details class="mnav">
+      <summary><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#011737" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu</summary>
+      <nav aria-label="Hoofdmenu (gsm)"><a class="item" href="activiteiten.html">Activiteiten</a><a class="item" href="jouw-straat.html">Jouw Straat in Kaart</a><a class="item" href="partners.html">Partners</a><a class="item" href="doe-mee.html" aria-current="page">Doe mee</a><a class="item" href="over.html">Over WaasUp</a>
+        <a class="btn btn-geel" href="doe-mee.html">Word lid</a>
+      </nav>
+    </details>
+  </div>
+</header>
+<main id="inhoud">
+<section class="paginakop"><div class="wrap"><div class="stack">
+  <p class="kicker">Doe mee</p>
+  <h1 class="h1">Word deel van de WaasUp-familie.</h1>
+  <p class="lead">Als lid hoor je als eerste wanneer een activiteit live gaat. Als vrijwilliger help je op de dag zelf: aan het onthaal, op het parcours of bij de opbouw. Jij kiest wanneer.</p>
+</div></div></section>
+<section class="sec" aria-labelledby="form-titel">
+  <div class="wrap grid2">
+    <div class="stack">
+      <h2 id="form-titel" class="h2">Zo werkt het</h2>
+      <ol class="lead" style="padding-left:22px;display:flex;flex-direction:column;gap:14px;margin:0">
+        <li>Je schrijft je hier in als lid, als vrijwilliger of als allebei.</li>
+        <li>Gaat er een activiteit live, dan krijg je automatisch een bericht.</li>
+        <li>Met één klik laat je weten of je meedoet of komt helpen.</li>
+      </ol>
+      <div id="foto" style="margin-top:16px;background:var(--licht);border-radius:8px;padding:24px" class="stack">
+        <h3 style="margin:0;font-size:18px">Foto’s van een activiteit delen?</h3>
+        <p class="small" style="color:var(--tekst);font-size:15px">Stuur ze naar <a href="mailto:info@waasup.be">info@waasup.be</a>. We bekijken elke foto eerst en zetten de mooiste op de site en op onze sociale media.</p>
+      </div>
+    </div>
+    <div class="vak">
+      <form data-onderwerp="Inschrijving lid/vrijwilliger via waasup.be" data-verplicht="voornaam,achternaam" novalidate>
+        <fieldset><legend>Ik schrijf me in als</legend>
+          <div class="keuzes">
+            <label><input type="radio" name="rol" value="lid" checked><span>Lid</span></label>
+            <label><input type="radio" name="rol" value="vrijwilliger"><span>Vrijwilliger</span></label>
+            <label><input type="radio" name="rol" value="allebei"><span>Allebei</span></label>
+          </div>
+        </fieldset>
+        <div class="velden2">
+          <div class="veld"><label for="voornaam">Voornaam</label><input id="voornaam" name="voornaam" class="in" autocomplete="given-name"></div>
+          <div class="veld"><label for="achternaam">Achternaam</label><input id="achternaam" name="achternaam" class="in" autocomplete="family-name"></div>
+        </div>
+        <div class="veld"><label for="email">E-mailadres</label><input id="email" name="email" type="email" class="in" placeholder="naam@voorbeeld.be" autocomplete="email"></div>
+        <div class="veld"><label for="gsm">Gsm-nummer (voor WhatsApp-berichten, niet verplicht)</label><input id="gsm" name="gsm" type="tel" class="in" placeholder="0470 12 34 56" autocomplete="tel"></div>
+        <div class="veld"><label for="straat">Straat en deelgemeente</label><input id="straat" name="straat" class="in" placeholder="Kouterstraat, Temse" autocomplete="address-line1"></div>
+        <label class="akkoord"><input type="checkbox" name="akkoord"><span>Ik geef WaasUp vzw toestemming om mijn gegevens te gebruiken om me te informeren over activiteiten. Ik kan me altijd uitschrijven. Lees de <a href="privacy.html">privacyverklaring</a>.</span></label>
+        <p class="fout" role="alert"></p>
+        <button type="submit" class="btn btn-navy" style="align-self:flex-start;min-height:52px;padding:0 32px">Inschrijven</button>
+      </form>
+      <div class="bedankt" role="status">
+        <img src="images/vos-sleutel.png" alt="" style="width:120px;height:120px;object-fit:contain">
+        <h3>Welkom in de WaasUp-familie, <span data-naam></span>!</h3>
+        <p>Je mailprogramma opent met je inschrijving. Druk op verzenden, dan ben je erbij. Zodra er een activiteit live gaat, hoor je het als eerste.</p>
+        <a class="btn btn-navy" href="activiteiten.html">Bekijk de activiteiten</a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+<footer class="voet">
+  <div class="wrap">
+    <div class="voet-grid">
+      <div><span class="merk">Waas<span>Up</span></span><span class="baseline">MENSEN | IDEEËN | TEMSE</span><span>Temse · Steendorp · Tielrode · Elversele · Velle</span></div>
+      <div><strong>Contact</strong><a href="tel:+32468594061">+32 (0)468 59 40 61</a><a href="mailto:info@waasup.be">info@waasup.be</a><span>Vijfhuizenstraat 13, 9140 Temse</span></div>
+      <div><strong>Doe mee</strong><a href="activiteiten.html">Activiteiten</a><a href="partners.html">Partners</a><a href="doe-mee.html">Lid of vrijwilliger worden</a><a href="jouw-straat.html">Jouw Straat in Kaart</a></div>
+      <div><strong>Volg ons</strong><a href="#">Facebook</a><a href="#">Instagram</a><a href="#">TikTok</a></div>
+    </div>
+    <div class="voet-onder"><span>WaasUp vzw · BE 1035.868.047 · Onafhankelijk en zonder politieke kleur</span><span><a href="privacy.html">Privacy</a></span></div>
+  </div>
+</footer>
+<script src="assets/site.js" defer></script>
+</body>
+</html>
