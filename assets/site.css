@@ -275,3 +275,14 @@ fieldset{border:0;margin:0;padding:0}
 .voet .socials a{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;transition:background .2s,color .2s,transform .2s}
 .voet .socials a:hover,.voet .socials a:focus-visible{background:var(--geel);color:var(--navy);transform:translateY(-2px)}
 .voet .socials svg{width:22px;height:22px}
+
+/* piepende vos boven de voettekst */
+.voet{position:relative}
+.piepvos{position:absolute;right:max(24px,calc((100% - 1200px)/2 + 24px));bottom:100%;margin-bottom:-1px;width:150px;height:auto;pointer-events:none;transform-origin:bottom center;animation:piep 6s ease-in-out infinite}
+@keyframes piep{0%,70%,100%{transform:translateY(0) rotate(0)}78%{transform:translateY(-6px) rotate(-4deg)}86%{transform:translateY(0) rotate(3deg)}}
+@media (prefers-reduced-motion:reduce){.piepvos{animation:none}}
+@media (max-width:860px){.piepvos{width:110px}}
+/* vos in paginakop zwaait zachtjes */
+.kopvos img{transform-origin:bottom center;animation:zwaai 7s ease-in-out infinite}
+@keyframes zwaai{0%,80%,100%{transform:rotate(0)}86%{transform:rotate(-3deg)}92%{transform:rotate(2deg)}}
+@media (prefers-reduced-motion:reduce){.kopvos img{animation:none}}
