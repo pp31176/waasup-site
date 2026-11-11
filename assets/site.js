@@ -57,11 +57,22 @@
     var vandaag = new Date().toISOString().slice(0, 10);
     var items = [].slice.call(document.querySelectorAll('[data-datum]'));
     var komend = items.filter(function (e) { return e.getAttribute('data-datum') >= vandaag; });
-    var v = komend[0] || items[items.length - 1];
+    // Een activiteit met data-uitgelicht gaat voor, zolang ze niet voorbij is
+    var uit = komend.filter(function (e) { return e.hasAttribute('data-uitgelicht'); })[0];
+    var v = uit || komend[0] || items[items.length - 1];
     if (v) {
       vb.querySelectorAll('[data-v]').forEach(function (el) {
-        el.textContent = v.getAttribute('data-' + el.getAttribute('data-v'));
+        var w = v.getAttribute('data-' + el.getAttribute('data-v'));
+        if (w === null && el.getAttribute('data-v') === 'polaroid') w = v.getAttribute('data-titel');
+        if (w !== null) el.textContent = w;
       });
+      var img = vb.querySelector('[data-v-beeld]');
+      if (img) {
+        var b = v.getAttribute('data-beeld');
+        img.src = b || 'images/vos-sleutel.png';
+        img.alt = v.getAttribute('data-beeldtekst') || 'De WaasUp-vos';
+        img.parentNode.classList.toggle('licht', !!b);
+      }
     }
   }
 

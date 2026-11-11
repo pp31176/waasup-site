@@ -244,3 +244,9 @@ fieldset{border:0;margin:0;padding:0}
   .kopvos::before{width:240px;height:240px;bottom:-90px}
   .ballon{left:8px;font-size:15px}
 }
+
+/* polaroid met activiteitslogo */
+.polaroid .beeld.licht{background:#FBF6EC;align-items:center}
+.polaroid .beeld.licht img{width:88%}
+.polaroid figcaption{white-space:pre-line;line-height:1.15}
+.polaroid figcaption[data-v="polaroid"]{font-size:23px;height:96px}
