@@ -15,6 +15,13 @@
 </head>
 <body>
 <a class="skip" href="#inhoud">Naar de inhoud</a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="poot" viewBox="0 0 24 24"><g fill="currentColor"><ellipse cx="12" cy="16" rx="5" ry="4.2"/><ellipse cx="5.5" cy="10" rx="2" ry="2.6"/><ellipse cx="9.5" cy="6.5" rx="2" ry="2.6"/><ellipse cx="14.5" cy="6.5" rx="2" ry="2.6"/><ellipse cx="18.5" cy="10" rx="2" ry="2.6"/></g></symbol>
+  <symbol id="hart" viewBox="0 0 24 24"><path fill="currentColor" d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.8 4.5c2.1 0 3.6 1.2 5.2 3 1.6-1.8 3.1-3 5.2-3 3.8 0 5.9 3.9 4.4 7.3C19.5 16.4 12 21 12 21z"/></symbol>
+  <symbol id="mensen" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="8" cy="8" r="3.4"/><circle cx="16.5" cy="9" r="2.8"/><path d="M1.5 19.5c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6z"/><path d="M14 19.5c.2-2.2-.6-3.9-1.8-5.1 1.1-.6 2.4-.9 3.9-.9 3 0 5.4 2 5.4 6z"/></g></symbol>
+  <symbol id="sleutel" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="4.5"/><path d="M12 12h10M18 12v4M21 12v3"/></g></symbol>
+</defs></svg>
+
 <header class="kop">
   <div class="wrap">
     <a class="logo" href="index.html" aria-label="WaasUp, naar de startpagina"><img src="images/logo-waasup.png" alt="WaasUp – Mensen, Ideeën, Temse" data-fallback="logo-tekst"></a>
@@ -30,16 +37,22 @@
   </div>
 </header>
 <main id="inhoud">
-<section class="paginakop"><div class="wrap"><div class="stack">
+<section class="paginakop paginakop-vos"><div class="wrap"><div class="stack">
   <p class="kicker">Partners</p>
   <h1 class="h1">Wie Temse een warm hart toedraagt, houdt die warmte in Temse.</h1>
   <p class="lead">We zoeken partners die hier ondernemen, of die Temsenaren aan het werk houden. Met jullie steun worden onze activiteiten mogelijk. Zo blijft wat in Temse verdiend wordt, ook iets doen voor Temse.</p>
-</div></div></section>
+  <p><a class="btn btn-geel" href="#pakketten">Bekijk de pakketten</a></p>
+</div>
+<figure class="kopvos" aria-hidden="true">
+  <span class="ballon">Word jij ook<br>een Vriend van de Vos?</span>
+  <img src="images/vos-sleutel.png" alt="">
+</figure>
+</div></section>
 <section class="sec" aria-label="Waarom partner worden">
   <div class="wrap drie">
-    <div><h2>Zichtbaar bij je buren</h2><p>Je naam staat bij de activiteiten waar Temsenaren samenkomen, op de site en op onze sociale media.</p></div>
-    <div><h2>Samen met je personeel</h2><p>Je medewerkers zijn welkom als vrijwilliger, deelnemer of ploeg. Een mooie manier om samen iets te doen voor de gemeente.</p></div>
-    <div><h2>Onafhankelijk en transparant</h2><p>WaasUp kiest geen kamp. Je steun gaat naar activiteiten voor iedereen in Groot-Temse.</p></div>
+    <div class="waarom"><span class="rondje"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#hart"/></svg></span><h2>Zichtbaar bij je buren</h2><p>Je naam staat bij de activiteiten waar Temsenaren samenkomen, op de site en op onze sociale media.</p></div>
+    <div class="waarom"><span class="rondje"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#mensen"/></svg></span><h2>Samen met je personeel</h2><p>Je medewerkers zijn welkom als vrijwilliger, deelnemer of ploeg. Een mooie manier om samen iets te doen voor de gemeente.</p></div>
+    <div class="waarom"><span class="rondje"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#sleutel"/></svg></span><h2>Onafhankelijk en transparant</h2><p>WaasUp kiest geen kamp. Je steun gaat naar activiteiten voor iedereen in Groot-Temse.</p></div>
   </div>
 </section>
 <section class="sec licht" aria-labelledby="pakketten">
@@ -47,6 +60,7 @@
     <div class="stack" style="gap:14px;margin-bottom:40px"><p class="kicker">Partnerpakketten</p><h2 id="pakketten" class="h2">Kies hoe je meebouwt.</h2></div>
     <div class="cards">
       <article class="pakket">
+        <div class="pootbadge" aria-label="1 van 3 pootjes"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#poot"/></svg></div>
         <p class="kicker">In natura</p>
         <h3>Vriend van de Vos</h3>
         <p class="pakket-sub">Voor handelaars die liever iets geven dan betalen.</p>
@@ -61,6 +75,7 @@
         <a class="btn btn-rand" href="#aanvraag" data-pakket="Vriend van de Vos">Kies dit pakket</a>
       </article>
       <article class="pakket">
+        <div class="pootbadge" aria-label="2 van 3 pootjes"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#poot"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#poot"/></svg></div>
         <p class="kicker">Financieel</p>
         <h3>Sleuteldrager</h3>
         <p class="pakket-sub">Voor bedrijven die WaasUp het hele jaar willen dragen.</p>
@@ -77,6 +92,7 @@
         <a class="btn btn-rand" href="#aanvraag" data-pakket="Sleuteldrager">Kies dit pakket</a>
       </article>
       <article class="pakket uitgelicht">
+        <div class="pootbadge" aria-label="3 van 3 pootjes"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#poot"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#poot"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#poot"/></svg></div>
         <p class="kicker">Hoofdpartner · natura + financieel</p>
         <h3>Hart van Temse</h3>
         <p class="pakket-sub">Voor wie echt het gezicht van een project wil zijn.</p>
@@ -119,6 +135,7 @@
       <h2 id="aanvraag-titel" class="h2">Vraag het partnerdossier aan</h2>
       <p class="lead">Laat je gegevens achter, dan bezorgen we je het dossier met alle pakketten. Liever eerst even praten? Dan komen we graag langs.</p>
       <p style="margin:0;font-size:16px;font-weight:600">Of bel: <a href="tel:+32468594061">+32 (0)468 59 40 61</a></p>
+      <div class="spoor" aria-hidden="true"><svg viewBox="0 0 24 24" style="transform:rotate(70deg)"><use href="#poot"/></svg><svg viewBox="0 0 24 24" style="transform:rotate(90deg)"><use href="#poot"/></svg><svg viewBox="0 0 24 24" style="transform:rotate(70deg)"><use href="#poot"/></svg><svg viewBox="0 0 24 24" style="transform:rotate(90deg)"><use href="#poot"/></svg><svg viewBox="0 0 24 24" style="transform:rotate(70deg)"><use href="#poot"/></svg><svg viewBox="0 0 24 24" style="transform:rotate(90deg)"><use href="#poot"/></svg></div>
     </div>
     <div class="vak">
       <form data-onderwerp="Aanvraag partnerdossier via waasup.be" data-verplicht="bedrijf,naam" novalidate>

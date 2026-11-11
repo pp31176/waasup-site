@@ -216,3 +216,31 @@ fieldset{border:0;margin:0;padding:0}
 .voet .baseline{font-size:12px;font-weight:600;letter-spacing:.2em;color:#fff}
 .voet-onder{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding-top:24px;font-size:13px;color:#8A96AB}
 .voet-onder a{color:#8A96AB;text-decoration:underline}
+
+/* partnerpagina: vos en pootjes */
+.paginakop-vos{overflow:hidden}
+.paginakop-vos .wrap{display:grid;grid-template-columns:1fr 340px;gap:32px;align-items:end;padding-bottom:0}
+.paginakop-vos .stack{padding-bottom:64px}
+.kopvos{position:relative;margin:0;align-self:end}
+.kopvos::before{content:"";position:absolute;left:50%;bottom:-120px;width:340px;height:340px;transform:translateX(-50%);border-radius:50%;background:var(--geel);opacity:.9}
+.kopvos img{position:relative;display:block;width:320px;height:auto;margin:0 auto -6px;filter:drop-shadow(0 14px 20px rgba(1,23,55,.22))}
+.ballon{position:absolute;z-index:2;top:-6px;left:-64px;background:#fff;border:2px solid var(--navy);border-radius:18px;padding:10px 14px;font-family:"Permanent Marker",Montserrat,sans-serif;font-size:17px;line-height:1.2;color:var(--navy);transform:rotate(-4deg);box-shadow:0 6px 14px rgba(1,23,55,.12)}
+.ballon::after{content:"";position:absolute;right:28px;bottom:-11px;width:18px;height:18px;background:#fff;border-right:2px solid var(--navy);border-bottom:2px solid var(--navy);transform:rotate(45deg)}
+.waarom .rondje{display:inline-grid;place-items:center;width:52px;height:52px;border-radius:50%;background:var(--geel);color:var(--navy);margin-bottom:6px}
+.waarom .rondje svg{width:26px;height:26px}
+.pootbadge{display:flex;gap:4px;color:var(--geel)}
+.pootbadge svg{width:26px;height:26px}
+.pootbadge svg:nth-child(2){transform:rotate(12deg) translateY(-4px)}
+.pootbadge svg:nth-child(3){transform:rotate(-8deg)}
+.pakket.uitgelicht{position:relative;box-shadow:0 18px 40px -22px rgba(1,23,55,.45)}
+.pakket.uitgelicht::before{content:"Meeste impact";position:absolute;top:-13px;right:20px;background:var(--geel);color:var(--navy);font-size:12px;font-weight:800;letter-spacing:.06em;padding:5px 12px;border-radius:999px}
+.spoor{display:flex;gap:18px;color:var(--geel);margin-top:12px}
+.spoor svg{width:24px;height:24px}
+.spoor svg:nth-child(odd){margin-top:12px}
+@media (max-width:860px){
+  .paginakop-vos .wrap{grid-template-columns:1fr}
+  .paginakop-vos .stack{padding-bottom:8px}
+  .kopvos img{width:220px}
+  .kopvos::before{width:240px;height:240px;bottom:-90px}
+  .ballon{left:8px;font-size:15px}
+}
