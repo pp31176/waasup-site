@@ -76,6 +76,54 @@
     }
   }
 
+  // Laatste nieuws van Instagram (opgehaald door GitHub Actions, staat op de site zelf: geen Meta-cookies)
+  // Voorbeeld bekijken zonder echte posts: voeg ?voorbeeld toe aan het adres.
+  var nb = document.querySelector('[data-insta]');
+  if (nb) {
+    var voorbeeld = /[?&]voorbeeld\b/.test(location.search);
+    var proef = [
+      { datum: '2026-11-08T10:00:00Z', soort: 'foto', beeld: 'images/kerk.jpg', tekst: 'Zondagochtend op de Markt. Wat maakt Temse voor jou de moeite? Laat het ons weten! #WaasUp #Temse', link: '#' },
+      { datum: '2026-11-04T17:30:00Z', soort: 'video', beeld: 'images/hondenwandeling.png', tekst: 'Save the date: onze Hondenwandeling op zondag 25 april 2027, vanaf 10 uur bij de Scouts in Steendorp. 🐾', link: '#' },
+      { datum: '2026-10-29T12:00:00Z', soort: 'foto', beeld: 'images/kraan.jpg', tekst: 'De Boelwerfkraan: al jaren een baken aan de Schelde. Ken jij het verhaal erachter?', link: '#' }
+    ];
+    function datumTekst(d) {
+      try { return new Date(d).toLocaleDateString('nl-BE', { day: 'numeric', month: 'long', year: 'numeric' }); } catch (e) { return ''; }
+    }
+    function toonNieuws(posts) {
+      if (!posts || !posts.length) return;
+      nb.innerHTML = '';
+      posts.forEach(function (p) {
+        var a = document.createElement('a');
+        a.className = 'post';
+        a.href = p.link || '#';
+        a.rel = 'noopener';
+        var fig = document.createElement('span');
+        fig.className = 'post-beeld' + (p.soort === 'video' ? ' video' : '');
+        var img = document.createElement('img');
+        img.src = p.beeld; img.alt = ''; img.loading = 'lazy';
+        fig.appendChild(img);
+        var dt = document.createElement('span');
+        dt.className = 'post-datum'; dt.textContent = datumTekst(p.datum);
+        var tx = document.createElement('span');
+        tx.className = 'post-tekst'; tx.textContent = p.tekst || '';
+        a.appendChild(fig); a.appendChild(dt); a.appendChild(tx);
+        a.setAttribute('aria-label', (p.soort === 'video' ? 'Video' : 'Foto') + ' van ' + datumTekst(p.datum) + ' op Instagram: ' + (p.tekst || ''));
+        nb.appendChild(a);
+      });
+      nb.hidden = false;
+      document.querySelectorAll('[data-insta-ander]').forEach(function (el) { el.hidden = true; });
+      var t = document.getElementById('beeld');
+      if (t) t.textContent = 'Het laatste van WaasUp.';
+    }
+    if (voorbeeld) toonNieuws(proef);
+    else if (window.fetch) {
+      fetch('data/instagram.json', { cache: 'no-cache' })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (j) { if (j) toonNieuws(j.posts); })
+        .catch(function () {});
+    }
+  }
+
   // Partnerpakketten: knop kiest meteen het pakket in het formulier
   document.querySelectorAll('[data-pakket]').forEach(function (a) {
     a.addEventListener('click', function () {

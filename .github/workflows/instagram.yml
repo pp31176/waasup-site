@@ -1,0 +1,38 @@
+name: Instagram-posts ophalen
+
+on:
+  schedule:
+    - cron: '17 * * * *'   # elk uur
+  workflow_dispatch:        # ook manueel te starten via het tabblad Actions
+
+permissions:
+  contents: write
+
+concurrency:
+  group: instagram
+  cancel-in-progress: false
+
+jobs:
+  ophalen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Posts ophalen
+        env:
+          IG_TOKEN: ${{ secrets.IG_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+        run: node scripts/haal-instagram.mjs
+      - name: Wijzigingen opslaan
+        run: |
+          git add data images/insta
+          if git diff --cached --quiet; then
+            echo "Niets nieuws."
+          else
+            git config user.name "WaasUp-bot"
+            git config user.email "info@waasup.be"
+            git commit -m "Nieuwe Instagram-posts"
+            git push
+          fi
