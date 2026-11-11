@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="nl-BE">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TEST – Jouw Straat in Kaart – WaasUp</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="images/vos-sleutel.png">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+.testband{background:var(--geel);color:var(--navy);text-align:center;font-weight:700;font-size:14px;padding:10px 16px}
+.kaartbox{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px}
+@media(max-width:900px){.kaartbox{grid-template-columns:1fr}}
+#kaart{height:620px;border-radius:12px;border:1px solid var(--lijn);z-index:1}
+@media(max-width:600px){#kaart{height:460px}}
+.themabtn{font:inherit;font-size:14px;font-weight:700;padding:9px 16px;border-radius:999px;border:1.5px solid var(--navy);background:#fff;color:var(--navy);cursor:pointer}
+.themabtn.on{background:var(--navy);color:#fff}
+.dgbtn{font:inherit;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;border:1px solid var(--blauwgrijs);background:#fff;color:var(--navy);cursor:pointer}
+.legrow{display:flex;gap:4px;margin-top:6px}.legrow span{flex:1;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.zijpaneel{border:1px solid var(--lijn);border-radius:12px;padding:18px;background:#fff;align-self:start}
+.score{display:flex;justify-content:space-between;align-items:center;padding:7px 0;font-weight:600;font-size:15px;border-bottom:1px solid var(--lijn)}
+.score b{min-width:64px;text-align:center;border-radius:6px;padding:6px 0;font-size:13px}
+.status{font-size:13px;color:var(--grijs);margin-top:8px}
+</style>
+</head>
+<body>
+<div class="testband">TESTPAGINA – fictieve antwoorden, enkel om te bekijken. Niet gelinkt vanuit het menu.</div>
+<header class="kop">
+  <div class="wrap">
+    <a class="logo" href="index.html" aria-label="WaasUp, naar de startpagina"><img src="images/logo-waasup.png" alt="WaasUp – Mensen, Ideeën, Temse" data-fallback="logo-tekst"></a>
+    <nav class="nav" aria-label="Hoofdmenu"><a class="item" href="activiteiten.html">Activiteiten</a><a class="item" href="jouw-straat.html" aria-current="page">Jouw Straat in Kaart</a><a class="item" href="partners.html">Partners</a><a class="item" href="doe-mee.html">Doe mee</a><a class="item" href="over.html">Over WaasUp</a>
+      <a class="btn btn-geel" href="doe-mee.html">Word vriend</a>
+    </nav>
+    <details class="mnav">
+      <summary><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#011737" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu</summary>
+      <nav aria-label="Hoofdmenu (gsm)"><a class="item" href="activiteiten.html">Activiteiten</a><a class="item" href="jouw-straat.html" aria-current="page">Jouw Straat in Kaart</a><a class="item" href="partners.html">Partners</a><a class="item" href="doe-mee.html">Doe mee</a><a class="item" href="over.html">Over WaasUp</a>
+        <a class="btn btn-geel" href="doe-mee.html">Word vriend</a>
+      </nav>
+    </details>
+  </div>
+</header>
+<main id="inhoud">
+<section class="paginakop"><div class="wrap"><div class="stack">
+  <p class="kicker">Jouw Straat in Kaart</p>
+  <h1 class="h1">Hoe woont Groot-Temse?</h1>
+  <p class="lead">Kies een thema en ontdek hoe de bewoners hun straat beoordelen. Donker betekent: hier is de meeste hulp nodig. Licht betekent: het is zo slecht nog niet. Grijze straten zijn nog niet open.</p>
+</div></div></section>
+<section class="sec" style="padding-top:40px">
+ <div class="wrap">
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px" id="themas"></div>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:16px"><span style="font-size:13px;font-weight:700;margin-right:4px">Ga naar:</span><span id="dgs"></span></div>
+  <div class="kaartbox">
+   <div id="kaart" role="region" aria-label="Kaart van Groot-Temse"></div>
+   <div class="zijpaneel">
+     <label for="zoek" style="font-size:14px;font-weight:700">Zoek je straat</label>
+     <input id="zoek" class="in" list="straten" placeholder="De Lokers" style="margin-top:6px">
+     <datalist id="straten"></datalist>
+     <div id="info" style="margin-top:16px"><p class="status" id="laad">De straten van Groot-Temse worden geladen…</p></div>
+     <div style="margin-top:18px"><div style="font-size:12px;font-weight:700" id="legtitel"></div><div class="legrow" id="leg"></div>
+     <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--grijs);margin-top:4px;font-weight:600"><span>1 · meeste hulp nodig</span><span>5 · zo slecht nog niet</span></div></div>
+   </div>
+  </div>
+ </div>
+</section>
+</main>
+<footer class="voet">
+  <img class="piepvos" src="images/vos-kopje.png" alt="" aria-hidden="true" loading="lazy">
+  <div class="wrap">
+    <div class="voet-grid">
+      <div><span class="merk">Waas<span>Up</span></span><span class="baseline">MENSEN | IDEEËN | TEMSE</span><span>Temse · Steendorp · Tielrode · Elversele · Velle</span></div>
+      <div><strong>Contact</strong><a href="tel:+32468594061">+32 (0)468 59 40 61</a><a href="mailto:info@waasup.be">info@waasup.be</a><span>Vijfhuizenstraat 13, 9140 Temse</span></div>
+      <div><strong>Doe mee</strong><a href="activiteiten.html">Activiteiten</a><a href="partners.html">Partners</a><a href="doe-mee.html">Vriend of vrijwilliger worden</a><a href="jouw-straat.html">Jouw Straat in Kaart</a></div>
+      <div><strong>Volg ons</strong><div class="socials"><a href="#" aria-label="WaasUp op Facebook" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.5-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H7.8v3h2.6V21z"/></svg></a><a href="https://www.instagram.com/waasuptemse1/" aria-label="WaasUp op Instagram" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/></g><circle cx="17.3" cy="6.7" r="1.2" fill="currentColor"/></svg></a><a href="https://www.tiktok.com/@waas.up.temse" aria-label="WaasUp op TikTok" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.6 3c.3 2.2 1.6 3.6 3.9 3.8v3c-1.4.1-2.7-.3-3.9-1.1v6.1c0 3.6-2.9 5.7-5.8 5.7-3.4 0-5.8-2.6-5.8-5.6 0-3.5 3.1-6.1 6.7-5.5v3.2c-1.6-.5-3.5.4-3.5 2.3 0 1.4 1.1 2.4 2.5 2.4 1.5 0 2.6-1 2.6-2.9V3z"/></svg></a></div></div>
+    </div>
+    <div class="voet-onder"><span>WaasUp vzw · BE 1035.868.047 · Onafhankelijk, voor iedereen in Groot-Temse</span><span><a href="privacy.html">Privacy</a></span></div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+(function(){
+var T=[['Veiligheid','#0B2A55','#1F4E8C','#4C8DDB','#A9C9F0','#E5F0FB'],['Mobiliteit','#5A2A08','#8E4511','#E0873B','#F2C095','#FCEEDF'],['Properheid','#123B21','#24653A','#46A36B','#A6D7B6','#E6F4EA'],['Samenleven','#2E1A47','#55357F','#A777C9','#D5BFE6','#F3EDF9']];
+var TX=['#fff','#fff','#fff','#011737','#011737'];
+var DG={'Temse-centrum':[51.126,4.212,15],'Elversele':[51.118,4.140,15],'Steendorp':[51.131,4.262,15],'Tielrode':[51.111,4.165,15],'Velle':[51.113,4.200,15],'Heel Groot-Temse':[51.122,4.200,13]};
+var th=0, lagen={}, data={};
+var kaart=L.map('kaart',{scrollWheelZoom:false}).setView([51.122,4.200],13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap-bijdragers'}).addTo(kaart);
+function hash(s){var h=0;for(var i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))|0}return Math.abs(h)}
+function nep(naam){var h=hash(naam);var huizen=12+h%50;var open=(h%10)<4||naam==='De Lokers'||naam==='Kouterstraat';var deeln=open?Math.ceil(huizen*(0.25+(h%20)/100)):Math.floor(huizen*((h%22)/100));
+ var sc=[0,1,2,3].map(function(j){return Math.round((1.4+((h>>(j*3))%37)/10)*10)/10});return {huizen:huizen,deeln:deeln,open:open,sc:sc.map(function(v){return Math.min(5,v)}),betr:Math.round(deeln*0.6)}}
+function sh(v){return Math.min(4,Math.max(0,Math.round(v)-1))}
+function stijl(naam){var d=data[naam];if(!d.open)return {color:'#9AA3B2',weight:3,opacity:.55,dashArray:'2 6'};var k=sh(d.sc[th]);return {color:T[th][1+k],weight:7,opacity:1}}
+function kleur(){Object.keys(lagen).forEach(function(n){lagen[n].setStyle(stijl(n))});
+ document.getElementById('themas').innerHTML=T.map(function(t,i){return '<button class="themabtn'+(i==th?' on':'')+'" data-t="'+i+'">'+t[0]+'</button>'}).join('');
+ document.getElementById('legtitel').textContent=T[th][0];
+ document.getElementById('leg').innerHTML=[1,2,3,4,5].map(function(k){return '<span style="background:'+T[th][k]+';color:'+TX[k-1]+'">'+k+'</span>'}).join('');}
+document.getElementById('themas').addEventListener('click',function(e){var b=e.target.closest('[data-t]');if(b){th=+b.dataset.t;kleur()}});
+document.getElementById('dgs').innerHTML=Object.keys(DG).map(function(k){return '<button class="dgbtn" data-dg="'+k+'">'+k+'</button>'}).join(' ');
+document.getElementById('dgs').addEventListener('click',function(e){var b=e.target.closest('[data-dg]');if(b){var c=DG[b.dataset.dg];kaart.setView([c[0],c[1]],c[2])}});
+function toon(naam){var d=data[naam];var h='<h3 style="margin:0;font-size:20px">'+naam+'</h3><p class="status">'+d.deeln+' van '+d.huizen+' huizen deden mee ('+Math.round(d.deeln/d.huizen*100)+'%)</p>';
+ if(!d.open){var nodig=Math.max(1,Math.ceil(d.huizen*.25)-d.deeln);h+='<p style="font-size:15px;margin-top:10px">Deze straat is nog niet open. Nog <b>'+nodig+'</b> huizen nodig. Woon jij hier? Vul de bevraging in en spoor je buren aan.</p><a class="btn btn-geel" style="margin-top:8px" href="https://tally.so/r/MekGKM">Vul de bevraging in</a>'}
+ else{h+=T.map(function(t,j){var k=sh(d.sc[j]);return '<div class="score"><span>'+t[0]+'</span><b style="background:'+t[1+k]+';color:'+TX[k]+'">'+d.sc[j].toFixed(1)+'/5</b></div>'}).join('')+'<p class="status"><b>'+d.betr+'</b> buren willen meedenken.</p>'}
+ document.getElementById('info').innerHTML=h;}
+function zoek(naam){if(!lagen[naam])return;kaart.fitBounds(lagen[naam].getBounds(),{maxZoom:17});toon(naam)}
+document.getElementById('zoek').addEventListener('change',function(){zoek(this.value.trim())});
+var q='[out:json][timeout:40];area["name"="Temse"]["admin_level"="8"]->.a;way(area.a)["highway"~"residential|living_street|tertiary|secondary|unclassified|primary"]["name"];out geom;';
+fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(q)}).then(function(r){return r.json()}).then(function(j){
+ var per={};j.elements.forEach(function(w){if(!w.geometry)return;(per[w.tags.name]=per[w.tags.name]||[]).push(w.geometry.map(function(p){return [p.lat,p.lon]}))});
+ Object.keys(per).forEach(function(n){data[n]=nep(n);lagen[n]=L.polyline(per[n],stijl(n)).addTo(kaart).on('click',function(){toon(n)}).bindTooltip(n,{sticky:true})});
+ document.getElementById('straten').innerHTML=Object.keys(per).sort().map(function(n){return '<option value="'+n.replace(/"/g,'&quot;')+'">'}).join('');
+ var open=Object.keys(data).filter(function(n){return data[n].open}).length;
+ document.getElementById('info').innerHTML='<p class="status">'+Object.keys(per).length+' straten geladen, waarvan '+open+' (fictief) open. Klik op een straat of zoek je eigen straat.</p>';
+ kleur(); if(data['De Lokers'])toon('De Lokers');
+}).catch(function(){document.getElementById('laad').textContent='De straten konden niet geladen worden. Probeer later opnieuw.'});
+kleur();
+})();
+</script>
+<script src="assets/site.js" defer></script>
+</body>
+</html>
