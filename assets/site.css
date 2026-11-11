@@ -250,3 +250,9 @@ fieldset{border:0;margin:0;padding:0}
 .polaroid .beeld.licht img{width:88%}
 .polaroid figcaption{white-space:pre-line;line-height:1.15}
 .polaroid figcaption[data-v="polaroid"]{font-size:23px;height:96px}
+
+/* Nog geheime activiteiten: tekst is onleesbaar en betekenisloos, alleen de sfeer blijft */
+.teaser .waas{filter:blur(6px);opacity:.75;user-select:none;pointer-events:none}
+.teaser .slot{display:flex;gap:10px;align-items:flex-start;margin:4px 0 0;font-size:14px;line-height:1.5;color:var(--tekst)}
+.teaser .slot a{font-weight:600}
+.teaser .sleutel{flex:0 0 22px;width:22px;height:22px;fill:none;stroke:#F4B400;stroke-width:2.2;stroke-linecap:round;margin-top:1px}
