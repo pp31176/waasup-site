@@ -269,3 +269,9 @@ fieldset{border:0;margin:0;padding:0}
 .post-tekst{font-size:15px;line-height:1.6;color:var(--tekst);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .post:hover .post-tekst{color:var(--navy)}
 @media (prefers-reduced-motion:reduce){.post-beeld img{transition:none}}
+
+/* sociale media-iconen in de voettekst */
+.voet .socials{display:flex;flex-direction:row;flex-wrap:wrap;gap:12px;margin-top:4px}
+.voet .socials a{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;transition:background .2s,color .2s,transform .2s}
+.voet .socials a:hover,.voet .socials a:focus-visible{background:var(--geel);color:var(--navy);transform:translateY(-2px)}
+.voet .socials svg{width:22px;height:22px}
