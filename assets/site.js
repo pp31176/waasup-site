@@ -65,6 +65,14 @@
     }
   }
 
+  // Partnerpakketten: knop kiest meteen het pakket in het formulier
+  document.querySelectorAll('[data-pakket]').forEach(function (a) {
+    a.addEventListener('click', function () {
+      var r = document.querySelector('input[name="pakket"][value="' + a.getAttribute('data-pakket') + '"]');
+      if (r) r.checked = true;
+    });
+  });
+
   // Formulieren: controleren en voorlopig doorsturen per e-mail naar info@waasup.be
   document.querySelectorAll('form[data-onderwerp]').forEach(function (f) {
     f.addEventListener('submit', function (ev) {
