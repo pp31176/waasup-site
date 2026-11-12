@@ -1,0 +1,18 @@
+name: Site publiceren
+
+# Na elke wijziging op main vraagt GitHub statichost.eu om waasup.be opnieuw te bouwen.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: publiceren
+  cancel-in-progress: true
+
+jobs:
+  publiceren:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build starten op statichost.eu
+        run: curl -fsS -X POST https://builder.statichost.eu/waasup
