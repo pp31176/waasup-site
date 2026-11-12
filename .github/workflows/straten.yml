@@ -6,7 +6,7 @@ on:
       - '.github/workflows/straten.yml'
       - 'scripts/haal-straten.mjs'
   schedule:
-    - cron: '41 3 1 * *'   # één keer per maand
+    - cron: '41 3 * * 1'   # elke maandag
   workflow_dispatch:
 
 permissions:
