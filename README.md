@@ -6,7 +6,7 @@ Statische site, gehost op statichost.eu (Europese infrastructuur).
 
 ## Laatste nieuws van Instagram
 
-Op de homepage (blok "In beeld") verschijnen automatisch de 6 nieuwste posts van Instagram (@waasuptemse1).
+Op de homepage (blok "In beeld") verschijnen automatisch de 6 nieuwste posts van Instagram (@waasup9140).
 Je post via Buffer naar Facebook, Instagram en TikTok; de site haalt elk uur de Instagram-posts op.
 
 - `scripts/haal-instagram.mjs` haalt de posts op en bewaart tekst + foto **op de site zelf** (geen cookies of tracking van Meta).

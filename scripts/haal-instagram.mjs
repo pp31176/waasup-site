@@ -3,7 +3,7 @@
 //
 // Nodig (als GitHub-secret, nooit in de code):
 //   IG_TOKEN    – toegangssleutel van Meta (Instagram Graph API)
-//   IG_USER_ID  – het ID van het Instagram-account waasuptemse1
+//   IG_USER_ID  – het ID van het Instagram-account waasup9140
 //
 // Resultaat:
 //   data/instagram.json      – lijst met de laatste posts (tekst, datum, link, foto)
