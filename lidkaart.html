@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="nl-BE">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mijn vriendenkaart – WaasUp</title>
+<meta name="description" content="Je digitale vriendenkaart van WaasUp: altijd bij de hand op je gsm.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#011737">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="images/vos-sleutel.png">
+<link rel="apple-touch-icon" href="images/app/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="WaasUp">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+  body{background:var(--navy);color:#fff;min-height:100vh;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+  .app{max-width:460px;margin:0 auto;padding:20px 18px 40px;display:flex;flex-direction:column;gap:22px}
+  .appkop{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .appkop .merk{font-weight:800;font-size:26px;letter-spacing:-.02em;color:#fff;text-decoration:none}
+  .appkop .merk span{color:var(--geel)}
+  .appkop a.site{color:var(--blauwgrijs);font-size:14px;font-weight:600}
+  .kaart{position:relative;background:#fff;color:var(--navy);border-radius:22px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.35)}
+  .kaart-boven{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 6px}
+  .woordmerk{font-weight:800;font-size:28px;letter-spacing:-.02em;color:var(--navy);line-height:1}
+  .woordmerk>span{color:var(--geel)}
+  .woordmerk small{display:block;font-size:8.5px;font-weight:700;letter-spacing:.16em;color:var(--grijs);margin-top:5px}
+  .kaart-boven .soort{font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--goud-tekst);text-align:right;line-height:1.4}
+  .kaart-midden{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end;padding:6px 20px 16px}
+  .kaart .naam{color:var(--navy);font-size:24px;font-weight:800;line-height:1.15;margin:0;letter-spacing:-.01em;word-break:break-word}
+  .kaart .gegeven{font-size:12px;color:var(--grijs);margin:10px 0 0;line-height:1.5}
+  .kaart .gegeven b{display:block;font-size:16px;color:var(--navy)}
+  .kaart .vos{width:96px;height:96px;object-fit:contain;margin:-10px -8px -4px 0}
+  .kaart-qr{background:var(--licht);display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 20px 20px;border-top:1px dashed var(--lijn)}
+  .kaart-qr .qr{background:#fff;padding:10px;border-radius:12px;line-height:0}
+  .kaart-qr .qr svg{width:180px;height:180px;display:block}
+  .kaart-qr p{margin:0;font-size:12px;color:var(--grijs);text-align:center}
+  .kaart-band{height:10px;background:linear-gradient(90deg,var(--geel) 0 50%,var(--navy) 50% 100%)}
+  .verlopen{background:#FDECEC;color:#8A1C1C;font-weight:700;font-size:13px;text-align:center;padding:8px}
+  .blok{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:18px 18px 20px}
+  .blok h2{margin:0 0 10px;font-size:18px;color:#fff}
+  .blok p,.blok li{color:var(--blauwgrijs);font-size:15px;line-height:1.6;margin:0}
+  .blok ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+  .event{display:grid;grid-template-columns:76px 1fr;gap:14px;align-items:center;text-decoration:none}
+  .event img{width:76px;height:76px;object-fit:contain;background:#fff;border-radius:12px}
+  .event strong{display:block;color:#fff;font-size:16px}
+  .event span{color:var(--blauwgrijs);font-size:14px;line-height:1.5}
+  .leeg{text-align:center}
+  .leeg img{width:150px;height:150px;object-fit:contain;margin:0 auto}
+  .leeg h1{font-size:26px;margin:6px 0 10px}
+  .knoppen{display:flex;flex-wrap:wrap;gap:10px}
+  .app .btn-licht{border-color:rgba(255,255,255,.4);color:#fff;background:transparent}.app .btn-licht:hover{background:rgba(255,255,255,.08);color:#fff}
+  .klein{font-size:13px;color:var(--blauwgrijs);text-align:center;margin:0}
+  .klein button{background:none;border:0;color:var(--blauwgrijs);text-decoration:underline;font:inherit;cursor:pointer;padding:0}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main class="app" id="inhoud">
+  <div class="appkop">
+    <a class="merk" href="index.html" aria-label="WaasUp, naar de website">Waas<span>Up</span></a>
+    <a class="site" href="index.html">Naar de website</a>
+  </div>
+
+  <!-- Er staat een kaart op dit toestel -->
+  <section id="metkaart" hidden aria-label="Mijn vriendenkaart">
+    <div class="kaart">
+      <div class="verlopen" id="verlopen" hidden>Deze kaart is verlopen. Vraag een nieuwe via info@waasup.be.</div>
+      <div class="kaart-boven">
+        <span class="woordmerk" aria-label="WaasUp – Mensen, Ideeën, Temse">Waas<span>Up</span><small>MENSEN | IDEEËN | TEMSE</small></span>
+        <span class="soort">Vriend van<br>WaasUp</span>
+      </div>
+      <div class="kaart-midden">
+        <div>
+          <p class="naam" id="k-naam"></p>
+          <p class="gegeven">Vriendnummer <b id="k-nummer"></b></p>
+          <p class="gegeven">Geldig tot en met <b id="k-geldig"></b></p>
+        </div>
+        <img class="vos" src="images/vos-sleutel.png" alt="">
+      </div>
+      <div class="kaart-qr">
+        <div class="qr" id="k-qr" role="img" aria-label="QR-code van je vriendenkaart"></div>
+        <p>Toon deze code aan het onthaal van een WaasUp-activiteit.</p>
+      </div>
+      <div class="kaart-band" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <!-- Nog geen kaart op dit toestel -->
+  <section id="zonderkaart" class="leeg stack" hidden>
+    <img src="images/vos-sleutel.png" alt="De WaasUp-vos met de sleutel van Temse">
+    <h1>Je digitale vriendenkaart</h1>
+    <p class="lead" style="color:var(--blauwgrijs)">Als vriend van WaasUp krijg je van ons een persoonlijke link. Open die link op je gsm, dan verschijnt je kaart hier, ook zonder internet.</p>
+    <div class="knoppen" style="justify-content:center">
+      <a class="btn btn-geel" href="doe-mee.html">Word vriend</a>
+      <a class="btn btn-licht" href="mailto:info@waasup.be?subject=Mijn%20vriendenkaart">Link kwijt?</a>
+    </div>
+  </section>
+
+  <section class="blok" aria-labelledby="voordelen-titel">
+    <h2 id="voordelen-titel">Jouw voordelen als vriend</h2>
+    <ul>
+      <li>Je hoort als eerste wanneer een activiteit live gaat.</li>
+      <li>Voorrang bij het inschrijven voor activiteiten.</li>
+      <li>Korting op activiteiten waar een bijdrage voor gevraagd wordt.</li>
+    </ul>
+  </section>
+
+  <section class="blok" aria-labelledby="event-titel">
+    <h2 id="event-titel">Eerstvolgende activiteit</h2>
+    <a class="event" href="activiteiten.html">
+      <img src="images/hondenwandeling.png" alt="">
+      <div><strong>Hondenwandeling</strong><span>Zondag 25 april 2027, vanaf 10 uur<br>Scouts Steendorp</span></div>
+    </a>
+  </section>
+
+  <!-- Uitleg om de app op het beginscherm te zetten -->
+  <section class="blok" id="installeer" hidden aria-labelledby="inst-titel">
+    <h2 id="inst-titel">Zet WaasUp op je beginscherm</h2>
+    <p id="inst-android" hidden>Tik op de knop hieronder. Daarna open je je kaart met één tik op het vos-icoontje.</p>
+    <p id="inst-ios" hidden>Tik in Safari onderaan op <b>Deel</b> (het vierkantje met de pijl) en kies <b>Zet op beginscherm</b>. Daarna open je je kaart met één tik op het vos-icoontje.</p>
+    <p id="inst-anders" hidden>Open deze pagina op je gsm en kies in het menu van je browser <b>Toevoegen aan startscherm</b>.</p>
+    <button class="btn btn-geel" id="inst-knop" type="button" hidden style="margin-top:14px">Installeer de app</button>
+  </section>
+
+  <p class="klein" id="wis" hidden>Niet jouw kaart of gsm doorgeven? <button type="button" id="wis-knop">Kaart van dit toestel verwijderen</button></p>
+  <p class="klein">Je kaart staat alleen op dit toestel. <a href="privacy.html" style="color:var(--blauwgrijs)">Privacy</a></p>
+</main>
+
+<script src="assets/vendor/qrcode.js"></script>
+<script>
+(function () {
+  var SLEUTEL = 'waasup-vriendenkaart';
+
+  function bewaar(k) { try { localStorage.setItem(SLEUTEL, JSON.stringify(k)); } catch (e) {} }
+  function lees() { try { return JSON.parse(localStorage.getItem(SLEUTEL)); } catch (e) { return null; } }
+  function wis() { try { localStorage.removeItem(SLEUTEL); } catch (e) {} }
+
+  // Een persoonlijke link ziet eruit als lidkaart.html#k=...  (het deel na # gaat nooit naar de server)
+  function uitLink() {
+    var m = location.hash.match(/[#&]k=([^&]+)/);
+    if (!m) return null;
+    try {
+      var b64 = m[1].replace(/-/g, '+').replace(/_/g, '/');
+      while (b64.length % 4) b64 += '=';
+      var tekst = decodeURIComponent(escape(atob(b64)));
+      var k = JSON.parse(tekst);
+      if (!k.n || !k.v) return null;
+      return k;
+    } catch (e) { return null; }
+  }
+
+  // Link geopend terwijl de pagina al openstond: opnieuw laden zodat de kaart verschijnt
+  window.addEventListener('hashchange', function () { if (/[#&]k=/.test(location.hash)) location.reload(); });
+
+  var nieuw = uitLink();
+  if (nieuw) {
+    bewaar(nieuw);
+    history.replaceState(null, '', location.pathname); // link niet in de adresbalk laten staan
+  }
+  var k = nieuw || lees();
+
+  function datumNL(iso) {
+    if (!iso) return 'onbepaald';
+    var d = iso.split('-');
+    var maanden = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+    return parseInt(d[2], 10) + ' ' + maanden[parseInt(d[1], 10) - 1] + ' ' + d[0];
+  }
+
+  if (k) {
+    document.getElementById('metkaart').hidden = false;
+    document.getElementById('wis').hidden = false;
+    var naam = (k.v + ' ' + (k.a || '')).trim();
+    document.getElementById('k-naam').textContent = naam;
+    document.getElementById('k-nummer').textContent = k.n;
+    document.getElementById('k-geldig').textContent = datumNL(k.g);
+    var vandaag = new Date().toISOString().slice(0, 10);
+    if (k.g && k.g < vandaag) document.getElementById('verlopen').hidden = false;
+    if (window.qrcode) {
+      var q = qrcode(0, 'M');
+      q.addData('WAASUP-VRIEND|' + k.n + '|' + naam + '|' + (k.g || ''));
+      q.make();
+      document.getElementById('k-qr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+    }
+  } else {
+    document.getElementById('zonderkaart').hidden = false;
+  }
+
+  document.getElementById('wis-knop').addEventListener('click', function () {
+    if (confirm('Je vriendenkaart van dit toestel verwijderen? Je kan ze altijd terugzetten met je persoonlijke link.')) {
+      wis(); location.reload();
+    }
+  });
+
+  // App op het beginscherm
+  var standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  var ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var inst = document.getElementById('installeer');
+  if (!standalone) {
+    if (ios) { inst.hidden = false; document.getElementById('inst-ios').hidden = false; }
+    var uitgesteld = null;
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault(); uitgesteld = e;
+      inst.hidden = false;
+      document.getElementById('inst-anders').hidden = true;
+      document.getElementById('inst-android').hidden = false;
+      document.getElementById('inst-knop').hidden = false;
+    });
+    document.getElementById('inst-knop').addEventListener('click', function () {
+      if (!uitgesteld) return;
+      uitgesteld.prompt();
+      uitgesteld.userChoice.then(function () { inst.hidden = true; });
+    });
+    if (!ios && /android|mobile/i.test(navigator.userAgent)) {
+      setTimeout(function () { if (inst.hidden) { inst.hidden = false; document.getElementById('inst-anders').hidden = false; } }, 1500);
+    }
+  }
+
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(function () {});
+})();
+</script>
+</body>
+</html>
