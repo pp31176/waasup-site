@@ -74,6 +74,7 @@
       <div class="kaart-midden">
         <div>
           <p class="naam" id="k-naam"></p>
+          <p class="gegeven" id="k-gezin-r" hidden>Geldt voor <b id="k-gezin"></b><span id="k-namen" style="display:block"></span></p>
           <p class="gegeven">Vriendnummer <b id="k-nummer"></b></p>
           <p class="gegeven">Geldig tot en met <b id="k-geldig"></b></p>
         </div>
@@ -174,12 +175,22 @@
     var naam = (k.v + ' ' + (k.a || '')).trim();
     document.getElementById('k-naam').textContent = naam;
     document.getElementById('k-nummer').textContent = k.n;
+    // Gezin: oudere kaarten zonder samenstelling = 1 volwassene
+    var vo = typeof k.vo === 'number' ? k.vo : 1, ki = typeof k.ki === 'number' ? k.ki : 0, tot = vo + ki;
+    function mv(x, een, veel) { return x + ' ' + (x === 1 ? een : veel); }
+    if (tot > 1 || ki > 0) {
+      var d = []; if (vo) d.push(mv(vo, 'volwassene', 'volwassenen')); if (ki) d.push(mv(ki, 'kind', 'kinderen'));
+      document.getElementById('k-gezin').textContent = d.join(' en ');
+      if (k.gl) document.getElementById('k-namen').textContent = 'Met ' + k.gl;
+      document.getElementById('k-gezin-r').hidden = false;
+      document.querySelector('.kaart .soort').innerHTML = 'Gezin<br>vriend van<br>WaasUp';
+    }
     document.getElementById('k-geldig').textContent = datumNL(k.g);
     var vandaag = new Date().toISOString().slice(0, 10);
     if (k.g && k.g < vandaag) document.getElementById('verlopen').hidden = false;
     if (window.qrcode) {
       var q = qrcode(0, 'M');
-      q.addData('WAASUP-VRIEND|' + k.n + '|' + naam + '|' + (k.g || ''));
+      q.addData('WAASUP-VRIEND|' + k.n + '|' + naam + '|' + (k.g || '') + '|V' + vo + 'K' + ki);
       q.make();
       document.getElementById('k-qr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
     }

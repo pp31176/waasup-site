@@ -13,13 +13,30 @@
   .uit{margin-top:24px;background:var(--licht);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px}
   .uit textarea{width:100%;min-height:90px;font:14px/1.5 Montserrat,Arial,sans-serif;padding:10px;border:1px solid var(--lijn);border-radius:8px;resize:vertical}
   .knoppen{display:flex;flex-wrap:wrap;gap:10px}
+  .teller{display:flex;align-items:center;gap:10px}
+  .teller button{width:44px;height:44px;border-radius:50%;border:1px solid var(--lijn);background:#fff;font:700 22px/1 Montserrat,Arial,sans-serif;color:var(--navy);cursor:pointer}
+  .teller button:disabled{opacity:.35;cursor:default}
+  .teller output{min-width:2ch;text-align:center;font-weight:800;font-size:20px}
+  .gezin{background:var(--licht);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px}
+  .gezin .samen{font-weight:700;margin:0}
+  details.aanpassen{border:1px dashed var(--lijn);border-radius:12px;padding:12px 16px}
+  details.aanpassen summary{cursor:pointer;font-weight:700}
 </style>
 </head>
 <body>
 <main class="intern stack">
   <p class="kicker">Intern · alleen voor WaasUp</p>
   <h1 class="h2">Vriendenkaart maken</h1>
-  <p class="lead">Vul de gegevens van een nieuwe vriend in. Je krijgt een persoonlijke link die je via WhatsApp of mail doorstuurt. Deze pagina bewaart niets: noteer het vriendnummer in je ledenlijst.</p>
+  <p class="lead">Vul de gegevens van een nieuwe vriend of een nieuw gezin in. Je krijgt een persoonlijke link die je via WhatsApp of mail doorstuurt. Deze pagina bewaart niets: het vriendnummer wordt automatisch aangemaakt, noteer het in je ledenlijst.</p>
+
+  <details class="aanpassen" id="aanp">
+    <summary>Bestaande kaart aanpassen (bv. gezin groter of kleiner)</summary>
+    <div class="stack" style="margin-top:12px">
+      <div class="veld"><label for="oud">Plak hier de link van de bestaande kaart</label><input id="oud" class="in" placeholder="https://waasup.be/lidkaart.html#k=…"></div>
+      <button class="btn btn-rand" type="button" id="laad" style="align-self:flex-start">Kaart inladen</button>
+      <p class="fout" id="fout-oud" role="alert"></p>
+    </div>
+  </details>
 
   <form id="f" class="stack" novalidate>
     <div class="velden2">
@@ -27,9 +44,20 @@
       <div class="veld"><label for="a">Achternaam</label><input id="a" class="in"></div>
     </div>
     <div class="velden2">
-      <div class="veld"><label for="n">Vriendnummer</label><input id="n" class="in" placeholder="WU-0001" required></div>
+      <div class="veld"><label for="n">Vriendnummer (automatisch)</label><input id="n" class="in" readonly tabindex="-1" style="background:var(--licht);font-weight:700;letter-spacing:.05em" aria-describedby="n-uitleg"><small id="n-uitleg">Wordt automatisch aangemaakt en kan je niet aanpassen.</small></div>
       <div class="veld"><label for="g">Geldig tot en met</label><input id="g" class="in" type="date" value="2027-12-31"></div>
     </div>
+    <fieldset class="gezin" style="border:0;margin:0">
+      <legend style="font-weight:700;padding:0;margin-bottom:4px">Wie hoort bij deze kaart?</legend>
+      <div class="velden2">
+        <div class="veld"><span id="l-vo">Volwassenen</span>
+          <div class="teller" role="group" aria-labelledby="l-vo"><button type="button" data-t="vo" data-d="-1" aria-label="Een volwassene minder">−</button><output id="vo">1</output><button type="button" data-t="vo" data-d="1" aria-label="Een volwassene meer">+</button></div></div>
+        <div class="veld"><span id="l-ki">Kinderen</span>
+          <div class="teller" role="group" aria-labelledby="l-ki"><button type="button" data-t="ki" data-d="-1" aria-label="Een kind minder">−</button><output id="ki">0</output><button type="button" data-t="ki" data-d="1" aria-label="Een kind meer">+</button></div></div>
+      </div>
+      <p class="samen" id="samen" aria-live="polite"></p>
+      <div class="veld"><label for="gl">Voornamen van de andere gezinsleden (niet verplicht)</label><input id="gl" class="in" placeholder="bv. Leen, Lotte, Mats"><small>Alleen voornamen, geen achternaam of andere gegevens van kinderen.</small></div>
+    </fieldset>
     <div class="veld"><label for="tel">Gsm-nummer voor WhatsApp (niet verplicht)</label><input id="tel" class="in" type="tel" placeholder="0470 12 34 56"></div>
     <p class="fout" id="fout" role="alert"></p>
     <button class="btn btn-navy" type="submit" style="align-self:flex-start">Maak de link</button>
@@ -52,22 +80,83 @@
     return btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   }
   var f = document.getElementById('f');
+  // Vriendnummer automatisch: WU-JJMM-XXXX (jaar+maand + 4 willekeurige tekens zonder verwarrende letters zoals O/0 en I/1)
+  function nieuwNummer() {
+    var tekens = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', r = '', d = new Date();
+    var buf = new Uint32Array(4); (window.crypto || window.msCrypto).getRandomValues(buf);
+    for (var i = 0; i < 4; i++) r += tekens.charAt(buf[i] % tekens.length);
+    return 'WU-' + String(d.getFullYear()).slice(2) + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + r;
+  }
+  f.n.value = nieuwNummer();
+
+  // Gezinssamenstelling: elke combinatie mag (1 volwassene, 2 volwassenen, 1 kind, 3 kinderen, ...), minstens 1 persoon
+  var MAX = 12, tel = { vo: 1, ki: 0 };
+  function meervoud(x, een, veel) { return x + ' ' + (x === 1 ? een : veel); }
+  function samenvatting(vo, ki) {
+    var d = [];
+    if (vo) d.push(meervoud(vo, 'volwassene', 'volwassenen'));
+    if (ki) d.push(meervoud(ki, 'kind', 'kinderen'));
+    return d.join(' en ');
+  }
+  function toonTeller() {
+    document.getElementById('vo').value = document.getElementById('vo').textContent = tel.vo;
+    document.getElementById('ki').value = document.getElementById('ki').textContent = tel.ki;
+    var tot = tel.vo + tel.ki;
+    [].forEach.call(document.querySelectorAll('.teller button'), function (b) {
+      var w = tel[b.dataset.t], d = +b.dataset.d;
+      b.disabled = d < 0 ? (w === 0 || tot === 1) : (w >= MAX);
+    });
+    document.getElementById('samen').textContent = 'Deze kaart geldt voor ' + meervoud(tot, 'persoon', 'personen') + ': ' + samenvatting(tel.vo, tel.ki) + '.';
+  }
+  [].forEach.call(document.querySelectorAll('.teller button'), function (b) {
+    b.addEventListener('click', function () {
+      var t = b.dataset.t, nw = tel[t] + (+b.dataset.d);
+      if (nw < 0 || nw > MAX) return;
+      if (t === 'vo' ? nw + tel.ki < 1 : nw + tel.vo < 1) return;
+      tel[t] = nw; toonTeller(); verberg();
+    });
+  });
+  function verberg() { document.getElementById('uit').hidden = true; document.getElementById('kopieer').textContent = 'Kopieer bericht'; }
+  toonTeller();
+
+  // Bestaande kaart inladen om aan te passen: zelfde vriendnummer, nieuwe samenstelling
+  var aanpassen = false;
+  document.getElementById('laad').addEventListener('click', function () {
+    var fo = document.getElementById('fout-oud'), m = document.getElementById('oud').value.match(/[#&]k=([^&\s]+)/);
+    try {
+      var b64 = m[1].replace(/-/g, '+').replace(/_/g, '/'); while (b64.length % 4) b64 += '=';
+      var k = JSON.parse(decodeURIComponent(escape(atob(b64))));
+      if (!k.n || !k.v) throw 0;
+      f.v.value = k.v; f.a.value = k.a || ''; f.n.value = k.n; if (k.g) f.g.value = k.g;
+      tel.vo = typeof k.vo === 'number' ? k.vo : 1; tel.ki = typeof k.ki === 'number' ? k.ki : 0;
+      f.gl.value = k.gl || ''; aanpassen = true; toonTeller(); verberg();
+      fo.textContent = ''; fo.style.color = ''; fo.textContent = 'Kaart ' + k.n + ' ingeladen. Pas aan en klik op "Maak de link".';
+      fo.style.color = 'var(--navy)';
+    } catch (e) { fo.style.color = ''; fo.textContent = 'Dit is geen geldige link van een vriendenkaart.'; }
+  });
+  ['v', 'a'].forEach(function (id) {
+    // Nieuwe naam na een gemaakte kaart = nieuwe vriend = nieuw nummer
+    f[id].addEventListener('input', function () {
+      if (!document.getElementById('uit').hidden && !aanpassen) { f.n.value = nieuwNummer(); verberg(); }
+    });
+  });
   f.addEventListener('submit', function (e) {
     e.preventDefault();
-    var v = f.v.value.trim(), a = f.a.value.trim(), n = f.n.value.trim().toUpperCase(), g = f.g.value;
+    var v = f.v.value.trim(), a = f.a.value.trim(), n = f.n.value, g = f.g.value;
     var fout = document.getElementById('fout');
-    if (!v || !n) { fout.textContent = 'Vul minstens de voornaam en het vriendnummer in.'; return; }
+    if (!v) { fout.textContent = 'Vul minstens de voornaam in.'; return; }
     fout.textContent = '';
-    var link = location.origin + '/lidkaart.html#k=' + b64url(JSON.stringify({ n: n, v: v, a: a, g: g }));
+    var gl = f.gl.value.split(',').map(function (x) { return x.trim(); }).filter(Boolean).join(', ');
+    var link = location.origin + '/lidkaart.html#k=' + b64url(JSON.stringify({ n: n, v: v, a: a, g: g, vo: tel.vo, ki: tel.ki, gl: gl }));
     var tekst = 'Dag ' + v + ', welkom bij de Vrienden van WaasUp! 🦊\n\n' +
-      'Hier is je digitale vriendenkaart. Open deze link op je gsm:\n' + link + '\n\n' +
+      (aanpassen ? 'Hier is je aangepaste vriendenkaart (' + samenvatting(tel.vo, tel.ki) + '). Open deze link op je gsm, dan wordt je oude kaart vervangen:\n' : 'Hier is je digitale vriendenkaart' + (tel.vo + tel.ki > 1 ? ' voor ' + samenvatting(tel.vo, tel.ki) : '') + '. Open deze link op je gsm:\n') + link + '\n\n' +
       'Tip: zet de kaart op je beginscherm (iPhone: Safari > Deel > Zet op beginscherm). Zo heb je ze altijd bij de hand, ook zonder internet.\n\n' +
       'Hartelijke groeten,\nWaasUp';
     document.getElementById('bericht').value = tekst;
-    var tel = f.tel.value.replace(/[^0-9+]/g, '');
-    if (tel.charAt(0) === '0') tel = '32' + tel.slice(1);
-    tel = tel.replace(/^\+/, '');
-    document.getElementById('wa').href = 'https://wa.me/' + tel + '?text=' + encodeURIComponent(tekst);
+    var gsm = f.tel.value.replace(/[^0-9+]/g, '');
+    if (gsm.charAt(0) === '0') gsm = '32' + gsm.slice(1);
+    gsm = gsm.replace(/^\+/, '');
+    document.getElementById('wa').href = 'https://wa.me/' + gsm + '?text=' + encodeURIComponent(tekst);
     document.getElementById('mail').href = 'mailto:?subject=' + encodeURIComponent('Je vriendenkaart van WaasUp') + '&body=' + encodeURIComponent(tekst);
     document.getElementById('bekijk').href = link;
     document.getElementById('uit').hidden = false;
