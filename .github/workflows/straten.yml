@@ -1,0 +1,36 @@
+name: Stratenkaart Groot-Temse ophalen
+
+on:
+  push:
+    paths:
+      - '.github/workflows/straten.yml'
+      - 'scripts/haal-straten.mjs'
+  schedule:
+    - cron: '41 3 1 * *'   # één keer per maand
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  ophalen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Straten ophalen
+        run: node scripts/haal-straten.mjs
+      - name: Wijzigingen opslaan
+        run: |
+          git add data/temse-straten.json
+          if git diff --cached --quiet; then
+            echo "Niets nieuws."
+          else
+            git config user.name "WaasUp-bot"
+            git config user.email "info@waasup.be"
+            git commit -m "Stratenkaart Groot-Temse bijgewerkt"
+            git pull --rebase
+            git push
+          fi

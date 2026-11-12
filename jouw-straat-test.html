@@ -104,8 +104,8 @@ function toon(naam){var d=data[naam];var h='<h3 style="margin:0;font-size:20px">
 function zoek(naam){if(!lagen[naam])return;kaart.fitBounds(lagen[naam].getBounds(),{maxZoom:17});toon(naam)}
 document.getElementById('zoek').addEventListener('change',function(){zoek(this.value.trim())});
 var q='[out:json][timeout:40];area["name"="Temse"]["admin_level"="8"]->.a;way(area.a)["highway"~"residential|living_street|tertiary|secondary|unclassified|primary"]["name"];out geom;';
-fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(q)}).then(function(r){return r.json()}).then(function(j){
- var per={};j.elements.forEach(function(w){if(!w.geometry)return;(per[w.tags.name]=per[w.tags.name]||[]).push(w.geometry.map(function(p){return [p.lat,p.lon]}))});
+function viaOverpass(){return fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(q)}).then(function(r){return r.json()}).then(function(j){var per={};j.elements.forEach(function(w){if(!w.geometry)return;(per[w.tags.name]=per[w.tags.name]||[]).push(w.geometry.map(function(p){return [p.lat,p.lon]}))});return per})}
+fetch('data/temse-straten.json',{cache:'no-cache'}).then(function(r){if(!r.ok)throw 0;return r.json()}).catch(viaOverpass).then(function(per){
  Object.keys(per).forEach(function(n){data[n]=nep(n);lagen[n]=L.polyline(per[n],stijl(n)).addTo(kaart).on('click',function(){toon(n)}).bindTooltip(n,{sticky:true})});
  document.getElementById('straten').innerHTML=Object.keys(per).sort().map(function(n){return '<option value="'+n.replace(/"/g,'&quot;')+'">'}).join('');
  var open=Object.keys(data).filter(function(n){return data[n].open}).length;
