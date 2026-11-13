@@ -66,6 +66,9 @@
         if (w === null && el.getAttribute('data-v') === 'polaroid') w = v.getAttribute('data-titel');
         if (w !== null) el.textContent = w;
       });
+      // Knop "Ik doe mee": naar het inschrijfformulier van die activiteit, anders naar de Doe mee-pagina
+      var ins = vb.querySelector('[data-v-inschrijven]');
+      if (ins) ins.href = v.getAttribute('data-inschrijven') || 'doe-mee.html';
       var img = vb.querySelector('[data-v-beeld]');
       if (img) {
         var b = v.getAttribute('data-beeld');
