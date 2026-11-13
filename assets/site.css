@@ -286,3 +286,11 @@ fieldset{border:0;margin:0;padding:0}
 .kopvos img{transform-origin:bottom center;animation:zwaai 7s ease-in-out infinite}
 @keyframes zwaai{0%,80%,100%{transform:rotate(0)}86%{transform:rotate(-3deg)}92%{transform:rotate(2deg)}}
 @media (prefers-reduced-motion:reduce){.kopvos img{animation:none}}
+
+/* Taalkeuze */
+.taal{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:var(--navy)}
+.taal a{color:var(--navy);text-decoration:none;padding:6px 4px;border-bottom:2px solid transparent}
+.taal a:hover,.taal a:focus-visible{border-bottom-color:var(--geel)}
+.taal [aria-current]{padding:6px 4px;border-bottom:2px solid var(--geel)}
+.taal span[aria-hidden]{color:var(--lijn)}
+@media (max-width:860px){.kop .wrap{flex-wrap:nowrap;gap:10px}.kop .logo{margin-right:auto}.taal{gap:2px;font-size:13px}.mnav summary{padding:0 14px}}

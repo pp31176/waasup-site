@@ -133,6 +133,13 @@
   });
 
   // Formulieren: controleren en voorlopig doorsturen per e-mail naar info@waasup.be
+  var lt = (document.documentElement.lang || 'nl').slice(0, 2);
+  var MELD = {
+    nl: ['Vul alle verplichte velden in.', 'Vul een geldig e-mailadres in.', 'Vink de toestemming aan om verder te gaan.'],
+    fr: ['Remplissez tous les champs obligatoires.', 'Indiquez une adresse e-mail valide.', 'Cochez la case de consentement pour continuer.'],
+    en: ['Please fill in all required fields.', 'Please enter a valid email address.', 'Please tick the consent box to continue.']
+  }[lt] || null;
+  if (!MELD) MELD = ['Vul alle verplichte velden in.', 'Vul een geldig e-mailadres in.', 'Vink de toestemming aan om verder te gaan.'];
   document.querySelectorAll('form[data-onderwerp]').forEach(function (f) {
     f.addEventListener('submit', function (ev) {
       ev.preventDefault();
@@ -141,15 +148,15 @@
       var verplicht = (f.getAttribute('data-verplicht') || '').split(',').filter(Boolean);
       for (var k = 0; k < verplicht.length; k++) {
         if (!String(data.get(verplicht[k]) || '').trim()) {
-          fout.textContent = 'Vul alle verplichte velden in.';
+          fout.textContent = MELD[0];
           f.querySelector('[name="' + verplicht[k] + '"]').focus();
           return;
         }
       }
       var mail = String(data.get('email') || '');
-      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail)) { fout.textContent = 'Vul een geldig e-mailadres in.'; return; }
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail)) { fout.textContent = MELD[1]; return; }
       var ak = f.querySelector('[name="akkoord"]');
-      if (ak && !ak.checked) { fout.textContent = 'Vink de toestemming aan om verder te gaan.'; return; }
+      if (ak && !ak.checked) { fout.textContent = MELD[2]; return; }
       fout.textContent = '';
       var regels = [];
       data.forEach(function (waarde, sleutel) { if (sleutel !== 'akkoord') regels.push(sleutel + ': ' + waarde); });
@@ -162,4 +169,38 @@
       window.location.href = url;
     });
   });
+})();
+
+// Taalkeuze: NL · FR · EN. Vertaalde pagina's staan in /fr/ en /en/, de rest gaat via Google Translate.
+(function () {
+  var VERTAALD = ['doe-mee.html', 'jouw-straat.html'];
+  var taal = (document.documentElement.lang || 'nl').slice(0, 2);
+  var pad = location.pathname.replace(/^\/(fr|en)\//, '/');
+  var pagina = pad.split('/').pop() || 'index.html';
+  var naam = { nl: 'NL', fr: 'FR', en: 'EN' };
+  var label = { nl: 'Nederlands', fr: 'Français', en: 'English' };
+  function link(doel) {
+    if (doel === taal) return null;
+    if (doel === 'nl') return '/' + pagina;
+    if (VERTAALD.indexOf(pagina) > -1) return '/' + doel + '/' + pagina;
+    return 'https://waasup-be.translate.goog/' + pagina + '?_x_tr_sl=nl&_x_tr_tl=' + doel + '&_x_tr_hl=' + doel;
+  }
+  function maak() {
+    var nav = document.createElement('nav');
+    nav.className = 'taal';
+    nav.setAttribute('aria-label', taal === 'fr' ? 'Langue' : taal === 'en' ? 'Language' : 'Taal');
+    ['nl', 'fr', 'en'].forEach(function (t, i) {
+      if (i) { var s = document.createElement('span'); s.setAttribute('aria-hidden', 'true'); s.textContent = '·'; nav.appendChild(s); }
+      var href = link(t);
+      var el = document.createElement(href ? 'a' : 'span');
+      el.textContent = naam[t];
+      el.setAttribute('lang', t);
+      el.setAttribute('title', label[t]);
+      if (href) { el.href = href; if (/translate\.goog/.test(href)) el.rel = 'nofollow'; } else { el.setAttribute('aria-current', 'true'); }
+      nav.appendChild(el);
+    });
+    return nav;
+  }
+  var wrap = document.querySelector('.kop .wrap');
+  if (wrap) { var mnav = wrap.querySelector('.mnav'); wrap.insertBefore(maak(), mnav || null); }
 })();
