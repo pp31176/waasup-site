@@ -86,7 +86,7 @@
     var voorbeeld = /[?&]voorbeeld\b/.test(location.search);
     var proef = [
       { datum: '2026-11-08T10:00:00Z', soort: 'foto', beeld: 'images/kerk.jpg', tekst: 'Zondagochtend op de Markt. Wat maakt Temse voor jou de moeite? Laat het ons weten! #WaasUp #Temse', link: '#' },
-      { datum: '2026-11-04T17:30:00Z', soort: 'video', beeld: 'images/hondenwandeling.png', tekst: 'Save the date: onze Hondenwandeling op zondag 25 april 2027, vanaf 10 uur bij de Scouts in Steendorp. 🐾', link: '#' },
+      { datum: '2026-11-04T17:30:00Z', soort: 'foto', beeld: 'images/hondenwandeling.png', tekst: 'Save the date: onze Hondenwandeling op zondag 25 april 2027, vanaf 10 uur bij de Scouts in Steendorp. 🐾', link: '#' },
       { datum: '2026-10-29T12:00:00Z', soort: 'foto', beeld: 'images/kraan.jpg', tekst: 'De Boelwerfkraan: al jaren een baken aan de Schelde. Ken jij het verhaal erachter?', link: '#' }
     ];
     function datumTekst(d) {
@@ -104,6 +104,7 @@
         fig.className = 'post-beeld' + (p.soort === 'video' ? ' video' : '');
         var img = document.createElement('img');
         img.src = p.beeld; img.alt = ''; img.loading = 'lazy';
+        fig.style.setProperty('--post-bg', 'url("' + String(p.beeld).replace(/["\\]/g, '') + '")');
         fig.appendChild(img);
         var dt = document.createElement('span');
         dt.className = 'post-datum'; dt.textContent = datumTekst(p.datum);
