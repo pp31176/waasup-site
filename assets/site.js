@@ -104,7 +104,7 @@
         fig.className = 'post-beeld' + (p.soort === 'video' ? ' video' : '');
         var img = document.createElement('img');
         img.src = p.beeld; img.alt = ''; img.loading = 'lazy';
-        fig.style.setProperty('--post-bg', 'url("' + String(p.beeld).replace(/["\\]/g, '') + '")');
+        fig.style.setProperty('--post-bg', 'url("' + new URL(p.beeld, location.href).href.replace(/["\\]/g, '') + '")');
         fig.appendChild(img);
         var dt = document.createElement('span');
         dt.className = 'post-datum'; dt.textContent = datumTekst(p.datum);
