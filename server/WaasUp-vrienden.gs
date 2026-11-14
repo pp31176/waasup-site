@@ -10,6 +10,7 @@
  */
 
 var SITE = 'https://waasup.be';
+var SHEET_ID = '1koxdwlquDH9hs8z_lNk8p2K4OXQi9Rvf_VkHPBDMxYM'; // Google Sheet "WaasUp Vrienden"
 var BLAD = 'Vrienden';
 var AFZENDER = 'WaasUp';
 var ANTWOORD_ADRES = 'info@waasup.be';
@@ -138,7 +139,7 @@ function stuurMail(aan, onderwerp, inhoud) {
 // ---------- Hulpjes ----------
 
 function blad() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet(), b = ss.getSheetByName(BLAD);
+  var ss = SpreadsheetApp.openById(SHEET_ID), b = ss.getSheetByName(BLAD);
   if (!b) b = ss.insertSheet(BLAD);
   if (b.getLastRow() === 0) { b.appendRow(KOLOMMEN); b.setFrozenRows(1); b.getRange(1, 1, 1, KOLOMMEN.length).setFontWeight('bold'); }
   return b;
