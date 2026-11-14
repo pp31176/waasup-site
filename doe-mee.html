@@ -56,15 +56,14 @@
       </div>
     </div>
     <div class="vak">
-      <form data-api="aanmelden" data-onderwerp="Inschrijving vriend/vrijwilliger via waasup.be" data-verplicht="voornaam,achternaam" novalidate>
+      <form data-api="aanmelden" data-onderwerp="Inschrijving vriend/vrijwilliger via waasup.be" data-verplicht="voornaam,achternaam" data-fout-verzenden="Je inschrijving kon niet verstuurd worden. Controleer je internet en probeer opnieuw." data-bestond="Je was al vriend van WaasUp. We stuurden je bestaande kaart opnieuw naar je mailbox." novalidate>
         <fieldset><legend>Ik schrijf me in als</legend>
           <div class="keuzes">
             <label><input type="radio" name="rol" value="vriend" checked><span>Vriend</span></label>
-            <label><input type="radio" name="rol" value="vrijwilliger"><span>Vrijwilliger</span></label>
-            <label><input type="radio" name="rol" value="allebei"><span>Allebei</span></label>
+            <label><input type="radio" name="rol" value="allebei"><span>Vriend én vrijwilliger</span></label>
           </div>
         </fieldset>
-        <p class="small" style="margin:4px 0 0;color:var(--tekst)"><strong>Voordeel als vriend:</strong> je krijgt als eerste info over de nieuwe events.</p>
+        <p class="small" style="margin:4px 0 0;color:var(--tekst)"><strong>Elke vrijwilliger is ook vriend.</strong> Je krijgt meteen je digitale vriendenkaart met vriendnummer en hoort als eerste wanneer een activiteit live gaat.</p>
         <div class="velden2">
           <div class="veld"><label for="voornaam">Voornaam</label><input id="voornaam" name="voornaam" class="in" autocomplete="given-name"></div>
           <div class="veld"><label for="achternaam">Achternaam</label><input id="achternaam" name="achternaam" class="in" autocomplete="family-name"></div>
@@ -72,6 +71,10 @@
         <div class="veld"><label for="email">E-mailadres</label><input id="email" name="email" type="email" class="in" placeholder="naam@voorbeeld.be" autocomplete="email"></div>
         <div class="veld"><label for="gsm">Gsm-nummer (voor WhatsApp-berichten, niet verplicht)</label><input id="gsm" name="gsm" type="tel" class="in" placeholder="0470 12 34 56" autocomplete="tel"></div>
         <div class="veld"><label for="straat">Straat en deelgemeente</label><input id="straat" name="straat" class="in" placeholder="Kouterstraat, Temse" autocomplete="address-line1"></div>
+        <fieldset class="gezinvak" style="border:0;margin:0;padding:0"><legend style="margin-bottom:10px">Wie hoort bij je vriendenkaart?</legend>
+          <div class="velden2"><div class="veld"><label for="vo">Volwassenen</label><select id="vo" name="vo" class="in"><option selected>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select></div><div class="veld"><label for="ki">Kinderen</label><select id="ki" name="ki" class="in"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></div></div>
+          <div class="veld" data-gl hidden><label for="gl">Voornamen van de andere gezinsleden (niet verplicht)</label><input id="gl" name="gl" class="in" placeholder="Leen, Lotte, Mats" autocapitalize="words"><small style="color:var(--grijs)">(alleen voornamen, gescheiden door een komma: Leen, Lotte, Mats)</small></div>
+        </fieldset>
         <label class="akkoord"><input type="checkbox" name="akkoord"><span>Ik geef WaasUp vzw toestemming om mijn gegevens te gebruiken om me te informeren over activiteiten. Ik kan me altijd uitschrijven. Lees de <a href="privacy.html">privacyverklaring</a>.</span></label>
         <p class="fout" role="alert"></p>
         <button type="submit" class="btn btn-navy" style="align-self:flex-start;min-height:52px;padding:0 32px">Inschrijven</button>
@@ -79,8 +82,8 @@
       <div class="bedankt" role="status">
         <img src="images/vos-sleutel.png" alt="" style="width:120px;height:120px;object-fit:contain">
         <h3>Welkom in de WaasUp-familie, <span data-naam></span>!</h3>
-        <p data-api-tekst="Je inschrijving is binnen. Ben je vriend? Dan krijg je zo een mail met je digitale vriendenkaart. Zodra er een activiteit live gaat, hoor je het als eerste.">Je mailprogramma opent met je inschrijving. Druk op verzenden, dan ben je erbij. Zodra er een activiteit live gaat, hoor je het als eerste.</p>
-        <a class="btn btn-navy" href="activiteiten.html">Bekijk de activiteiten</a>
+        <p data-tekst>Je vriendenkaart is klaar: vriendnummer <b data-nummer></b>. Je krijgt ook een welkomstmail met je kaart. Zodra er een activiteit live gaat, hoor je het als eerste.</p>
+        <a class="btn btn-geel" href="/lidkaart.html">Bekijk mijn vriendenkaart</a>
       </div>
     </div>
   </div>
@@ -99,6 +102,7 @@
   </div>
 </footer>
 <script src="assets/app-config.js"></script>
-<script src="assets/site.js" defer></script>
+<script src="assets/vriend.js"></script>
+<script src="assets/site.js?v=5" defer></script>
 </body>
 </html>

@@ -144,7 +144,7 @@
     en: ['Please fill in all required fields.', 'Please enter a valid email address.', 'Please tick the consent box to continue.']
   }[lt] || null;
   if (!MELD) MELD = ['Vul alle verplichte velden in.', 'Vul een geldig e-mailadres in.', 'Vink de toestemming aan om verder te gaan.'];
-  document.querySelectorAll('form[data-onderwerp]').forEach(function (f) {
+  document.querySelectorAll('form[data-onderwerp]:not([data-api])').forEach(function (f) {
     f.addEventListener('submit', function (ev) {
       ev.preventDefault();
       var fout = f.querySelector('.fout');
@@ -164,25 +164,6 @@
       fout.textContent = '';
       var vak = f.closest('.vak');
       var naamVeld = String(data.get('voornaam') || data.get('naam') || '').trim();
-      // Gekoppeld aan de WaasUp-server? Dan gaat de inschrijving automatisch, zonder mailprogramma.
-      var API = (window.WAASUP_API || '').trim();
-      if (API && f.hasAttribute('data-api')) {
-        var obj = {}; data.forEach(function (w, s) { if (s !== 'akkoord') obj[s] = w; });
-        obj.actie = f.getAttribute('data-api'); obj.taal = lt; obj.toestemming = ak ? 'ja' : '';
-        var knop = f.querySelector('[type="submit"]'); knop.disabled = true;
-        fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(obj) })
-          .then(function (r) { return r.json(); })
-          .then(function (j) {
-            if (!j || !j.ok) throw 0;
-            vak.querySelectorAll('[data-naam]').forEach(function (el) { el.textContent = naamVeld; });
-            var t = vak.querySelector('[data-api-tekst]'); if (t) t.textContent = t.getAttribute('data-api-tekst');
-            vak.classList.add('verzonden');
-          })
-          .catch(function () { knop.disabled = false; verstuurViaMail(); });
-        return;
-      }
-      verstuurViaMail();
-      function verstuurViaMail() {
       var regels = [];
       data.forEach(function (waarde, sleutel) { if (sleutel !== 'akkoord') regels.push(sleutel + ': ' + waarde); });
       if (ak) regels.push('toestemming: ja');
@@ -191,7 +172,47 @@
       vak.querySelectorAll('[data-naam]').forEach(function (el) { el.textContent = naamVeld; });
       vak.classList.add('verzonden');
       window.location.href = url;
-      }
+    });
+  });
+})();
+
+// Vriend (en vrijwilliger) worden op de website: zelfde werking als in de app – kaart meteen klaar, inschrijving automatisch
+(function () {
+  var f = document.querySelector('form[data-api="aanmelden"]');
+  if (!f || !window.WaasUpVriend) return;
+  var lt = (document.documentElement.lang || 'nl').slice(0, 2);
+  var MELD = {
+    nl: ['Vul je voornaam en achternaam in.', 'Vul een geldig e-mailadres in.', 'Vink de toestemming aan om verder te gaan.'],
+    fr: ['Indique ton prénom et ton nom.', 'Indique une adresse e-mail valide.', 'Coche la case de consentement pour continuer.'],
+    en: ['Please fill in your first and last name.', 'Please enter a valid email address.', 'Please tick the consent box to continue.']
+  }[lt] || ['Vul je voornaam en achternaam in.', 'Vul een geldig e-mailadres in.', 'Vink de toestemming aan om verder te gaan.'];
+  var vo = f.querySelector('[name="vo"]'), ki = f.querySelector('[name="ki"]'), glv = f.querySelector('[data-gl]');
+  function gezin() { if (glv) glv.hidden = (+vo.value) + (+ki.value) < 2; }
+  if (vo && ki) { vo.addEventListener('change', gezin); ki.addEventListener('change', gezin); gezin(); }
+  f.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var fout = f.querySelector('.fout'), d = new FormData(f);
+    var v = String(d.get('voornaam') || '').trim(), a = String(d.get('achternaam') || '').trim(), mail = String(d.get('email') || '').trim();
+    if (!v || !a) { fout.textContent = MELD[0]; return; }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail)) { fout.textContent = MELD[1]; return; }
+    if (!f.querySelector('[name="akkoord"]').checked) { fout.textContent = MELD[2]; return; }
+    fout.textContent = '';
+    var knop = f.querySelector('[type="submit"]'); knop.disabled = true;
+    var nvo = +(d.get('vo') || 1), nki = +(d.get('ki') || 0);
+    WaasUpVriend.inschrijven({
+      kaart: { v: v, a: a, vo: nvo, ki: nki, gl: nvo + nki > 1 ? String(d.get('gl') || '') : '' },
+      email: mail, gsm: String(d.get('gsm') || '').trim(), straat: String(d.get('straat') || '').trim(),
+      rol: d.get('rol') === 'allebei' ? 'allebei' : 'vriend', bron: 'website', taal: lt
+    }).then(function (r) {
+      var vak = f.closest('.vak');
+      vak.querySelectorAll('[data-naam]').forEach(function (el) { el.textContent = r.kaart.v; });
+      vak.querySelectorAll('[data-nummer]').forEach(function (el) { el.textContent = r.kaart.n; });
+      if (r.bestond) { var p = vak.querySelector('[data-tekst]'); if (p) p.textContent = f.getAttribute('data-bestond'); }
+      vak.classList.add('verzonden');
+      vak.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }).catch(function () {
+      knop.disabled = false;
+      fout.textContent = f.getAttribute('data-fout-verzenden');
     });
   });
 })();

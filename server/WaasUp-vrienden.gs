@@ -39,18 +39,29 @@ function doPost(e) {
 
 // ---------- Acties ----------
 
-// Kaart gemaakt in de app (of op de interne pagina kaart-maken)
+// Nieuwe vriend (app, website of interne pagina kaart-maken). Elke vrijwilliger is ook vriend.
 function inschrijven(d) {
-  var k = d.kaart || {}, mail = schoon(d.email, 120).toLowerCase();
+  var k = d.kaart || {}, mail = schoon(d.email, 120).toLowerCase(), bron = schoon(d.bron, 20) || 'app';
   if (!/^WU-\d{4}-[A-Z0-9]{4}$/.test(k.n || '') || !schoon(k.v, 60) || !mailOk(mail)) return { ok: false, fout: 'gegevens' };
+  var rol = d.rol === 'allebei' || d.rol === 'vrijwilliger' ? 'vriend + vrijwilliger' : 'vriend';
   var kaart = maakKaart(k.n, k.v, k.a, k.g, k.vo, k.ki, k.gl);
-  var rij = { Vriendnummer: kaart.n, Voornaam: kaart.v, Achternaam: kaart.a, 'E-mail': mail, Gsm: schoon(d.gsm, 30),
-    Volwassenen: kaart.vo, Kinderen: kaart.ki, Gezinsleden: kaart.gl, 'Geldig tot': kaart.g, Rol: 'vriend',
-    Bron: schoon(d.bron, 20) || 'app', Toestemming: 'ja', Kaartlink: kaartLink(kaart) };
   var bestaand = zoekRij(function (r) { return r[K.Vriendnummer] === kaart.n; });
-  if (bestaand) schrijfRij(bestaand.nr, rij); else voegToe(rij);
-  if (!d.geenMail && !bestaand) welkomstmail(mail, kaart);
-  return { ok: true, n: kaart.n };
+  // Zelfde e-mailadres al vriend (via app of website)? Geen tweede kaart: de bestaande terugsturen.
+  if (!bestaand && bron !== 'handmatig') {
+    var zelfde = zoekRij(function (r) { return String(r[K['E-mail']]).toLowerCase() === mail && r[K.Vriendnummer]; });
+    if (zelfde) {
+      var oud = kaartUitRij(zelfde.r);
+      if (rol !== 'vriend' && zelfde.r[K.Rol] === 'vriend') schrijfRij(zelfde.nr, { Rol: rol });
+      welkomstmail(mail, oud, rol !== 'vriend');
+      return { ok: true, bestond: true, kaart: oud };
+    }
+  }
+  var rij = { Vriendnummer: kaart.n, Voornaam: kaart.v, Achternaam: kaart.a, 'E-mail': mail, Gsm: schoon(d.gsm, 30),
+    Volwassenen: kaart.vo, Kinderen: kaart.ki, Gezinsleden: kaart.gl, 'Geldig tot': kaart.g, Rol: rol, Straat: schoon(d.straat, 120),
+    Bron: bron + (d.taal && d.taal !== 'nl' ? ' (' + schoon(d.taal, 2) + ')' : ''), Toestemming: 'ja', Kaartlink: kaartLink(kaart) };
+  if (bestaand) { delete rij.Rol; schrijfRij(bestaand.nr, rij); } else voegToe(rij);
+  if (!d.geenMail && !bestaand) welkomstmail(mail, kaart, rol !== 'vriend');
+  return { ok: true, kaart: kaart };
 }
 
 // Formulier "Doe mee" op de website

@@ -56,15 +56,14 @@
       </div>
     </div>
     <div class="vak">
-      <form data-api="aanmelden" data-onderwerp="Inschrijving vriend/vrijwilliger via waasup.be (EN)" data-verplicht="voornaam,achternaam" novalidate>
+      <form data-api="aanmelden" data-onderwerp="Inschrijving vriend/vrijwilliger via waasup.be (EN)" data-verplicht="voornaam,achternaam" data-fout-verzenden="Your sign-up could not be sent. Please check your internet connection and try again." data-bestond="You were already a friend of WaasUp. We sent your existing card to your mailbox again." novalidate>
         <fieldset><legend>I am signing up as</legend>
           <div class="keuzes">
             <label><input type="radio" name="rol" value="vriend" checked><span>Friend</span></label>
-            <label><input type="radio" name="rol" value="vrijwilliger"><span>Volunteer</span></label>
-            <label><input type="radio" name="rol" value="allebei"><span>Both</span></label>
+            <label><input type="radio" name="rol" value="allebei"><span>Friend and volunteer</span></label>
           </div>
         </fieldset>
-        <p class="small" style="margin:4px 0 0;color:var(--tekst)"><strong>Friend perk:</strong> you get news about new events first.</p>
+        <p class="small" style="margin:4px 0 0;color:var(--tekst)"><strong>Every volunteer is also a friend.</strong> You get your digital friend card with friend number straight away and are the first to know when an activity goes live.</p>
         <div class="velden2">
           <div class="veld"><label for="voornaam">First name</label><input id="voornaam" name="voornaam" class="in" autocomplete="given-name"></div>
           <div class="veld"><label for="achternaam">Last name</label><input id="achternaam" name="achternaam" class="in" autocomplete="family-name"></div>
@@ -72,6 +71,10 @@
         <div class="veld"><label for="email">Email address</label><input id="email" name="email" type="email" class="in" placeholder="name@example.be" autocomplete="email"></div>
         <div class="veld"><label for="gsm">Mobile number (for WhatsApp messages, optional)</label><input id="gsm" name="gsm" type="tel" class="in" placeholder="0470 12 34 56" autocomplete="tel"></div>
         <div class="veld"><label for="straat">Street and district</label><input id="straat" name="straat" class="in" placeholder="Kouterstraat, Temse" autocomplete="address-line1"></div>
+        <fieldset class="gezinvak" style="border:0;margin:0;padding:0"><legend style="margin-bottom:10px">Who is on your friend card?</legend>
+          <div class="velden2"><div class="veld"><label for="vo">Adults</label><select id="vo" name="vo" class="in"><option selected>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select></div><div class="veld"><label for="ki">Children</label><select id="ki" name="ki" class="in"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></div></div>
+          <div class="veld" data-gl hidden><label for="gl">First names of the other family members (optional)</label><input id="gl" name="gl" class="in" placeholder="Leen, Lotte, Mats" autocapitalize="words"><small style="color:var(--grijs)">(first names only, separated by a comma: Leen, Lotte, Mats)</small></div>
+        </fieldset>
         <label class="akkoord"><input type="checkbox" name="akkoord"><span>I allow WaasUp vzw to use my details to inform me about activities. I can unsubscribe at any time. Read the <a href="../privacy.html">privacy statement</a> (in Dutch).</span></label>
         <p class="fout" role="alert"></p>
         <button type="submit" class="btn btn-navy" style="align-self:flex-start;min-height:52px;padding:0 32px">Sign up</button>
@@ -79,8 +82,8 @@
       <div class="bedankt" role="status">
         <img src="../images/vos-sleutel.png" alt="" style="width:120px;height:120px;object-fit:contain">
         <h3>Welcome to the WaasUp family, <span data-naam></span>!</h3>
-        <p data-api-tekst="Your sign-up has arrived. Signed up as a friend? You will get an email with your digital friend card shortly. As soon as an activity goes live, you will be the first to know.">Your email app opens with your sign-up. Press send and you're in. As soon as an activity goes live, you'll be the first to know.</p>
-        <a class="btn btn-navy" href="../activiteiten.html">See the activities</a>
+        <p data-tekst>Your friend card is ready: friend number <b data-nummer></b>. You will also get a welcome email with your card. As soon as an activity goes live, you will be the first to know.</p>
+        <a class="btn btn-geel" href="/lidkaart.html">View my friend card</a>
       </div>
     </div>
   </div>
@@ -99,6 +102,7 @@
   </div>
 </footer>
 <script src="../assets/app-config.js"></script>
-<script src="../assets/site.js" defer></script>
+<script src="../assets/vriend.js"></script>
+<script src="../assets/site.js?v=5" defer></script>
 </body>
 </html>

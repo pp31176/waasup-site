@@ -1,11 +1,12 @@
 // WaasUp-app: zorgt dat de vriendenkaart ook zonder internet opent.
 // Verhoog VERSIE bij elke wijziging aan de app-bestanden.
-var VERSIE = 'waasup-app-v4';
+var VERSIE = 'waasup-app-v5';
 var BESTANDEN = [
   '/lidkaart.html',
   '/assets/site.css',
   '/assets/site.js',
   '/assets/app-config.js',
+  '/assets/vriend.js',
   '/assets/vendor/qrcode.js',
   '/assets/fonts/montserrat-latin-400-normal.woff2',
   '/assets/fonts/montserrat-latin-600-normal.woff2',

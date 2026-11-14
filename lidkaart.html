@@ -133,6 +133,7 @@
         </div>
         <div class="veld" id="gl-veld" hidden><label for="i-gl">Voornamen van de andere gezinsleden (niet verplicht)</label><input id="i-gl" class="in" placeholder="Leen, Lotte, Mats" autocapitalize="words"><small>(alleen voornamen, gescheiden door een komma: Leen, Lotte, Mats)</small></div>
       </fieldset>
+      <label class="akkoord"><input type="checkbox" id="i-vw"><span><b style="color:#fff">Ik help ook graag als vrijwilliger</b> op de dag van een activiteit (onthaal, parcours, opbouw). Jij kiest wanneer.</span></label>
       <label class="akkoord"><input type="checkbox" id="i-ok"><span>Ik geef WaasUp vzw toestemming om mijn gegevens te gebruiken om me te informeren over activiteiten. Ik kan me altijd uitschrijven. Lees de <a href="privacy.html">privacyverklaring</a>.</span></label>
       <p class="fout" id="i-fout" role="alert"></p>
       <div class="knoppen">
@@ -204,6 +205,7 @@
 </main>
 
 <script src="assets/app-config.js"></script>
+<script src="assets/vriend.js"></script>
 <script src="assets/vendor/qrcode.js"></script>
 <script>
 (function () {
@@ -316,21 +318,6 @@
   });
   toonTeller();
 
-  // Vriendnummer automatisch: WU-JJMM-XXXX (geen verwarrende tekens zoals O/0 en I/1)
-  function nieuwNummer() {
-    var tekens = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', r = '', d = new Date();
-    var buf = new Uint32Array(4); (window.crypto || window.msCrypto).getRandomValues(buf);
-    for (var i = 0; i < 4; i++) r += tekens.charAt(buf[i] % tekens.length);
-    return 'WU-' + String(d.getFullYear()).slice(2) + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + r;
-  }
-  // Gezinsleden altijd op dezelfde manier: "Leen, Lotte, Mats" (ook als iemand ; / & of "en" gebruikt)
-  function netteNamen(t) {
-    return String(t || '').split(/\s*(?:,|;|\/|&|\+|\ben\b|\band\b|\bet\b|\n)\s*/i).map(function (x) {
-      x = x.replace(/\s+/g, ' ').trim();
-      return x ? x.charAt(0).toUpperCase() + x.slice(1) : '';
-    }).filter(Boolean).join(', ');
-  }
-  function geldigTot() { return (new Date().getFullYear() + 1) + '-12-31'; }
   var mailOk = function (m) { return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m); };
 
   $('f-ins').addEventListener('submit', function (e) {
@@ -340,20 +327,21 @@
     if (!mailOk(mail)) { fout.textContent = 'Vul een geldig e-mailadres in.'; $('i-mail').focus(); return; }
     if (!$('i-ok').checked) { fout.textContent = 'Vink de toestemming aan om verder te gaan.'; return; }
     fout.textContent = '';
-    var gl = tel.vo + tel.ki > 1 ? netteNamen($('i-gl').value) : '';
-    var kaart = { n: nieuwNummer(), v: v, a: a, g: geldigTot(), vo: tel.vo, ki: tel.ki, gl: gl };
-    // De kaart staat meteen op dit toestel, ook als het internet even wegvalt
-    bewaar(kaart); toonKaart(kaart);
-    var gegevens = { kaart: kaart, email: mail, gsm: $('i-gsm').value.trim(), link: linkVan(kaart), bron: 'app' };
-    meld('Welkom bij de Vrienden van WaasUp, ' + v.replace(/[<>&]/g, '') + '! Je kaart is klaar.');
-    api('inschrijven', gegevens).then(function () {
-      meld('Welkom bij de Vrienden van WaasUp, ' + v.replace(/[<>&]/g, '') + '! Je kaart is klaar en je krijgt een welkomstmail op ' + mail.replace(/[<>&]/g, '') + '.');
+    var gl = tel.vo + tel.ki > 1 ? $('i-gl').value : '';
+    var naam = v.replace(/[<>&]/g, ''), adres = mail.replace(/[<>&]/g, '');
+    var vrijw = $('i-vw').checked;
+    // De kaart staat meteen op dit toestel; de inschrijving gaat automatisch naar WaasUp
+    var p = WaasUpVriend.inschrijven({ kaart: { v: v, a: a, vo: tel.vo, ki: tel.ki, gl: gl }, email: mail, gsm: $('i-gsm').value.trim(),
+      rol: vrijw ? 'allebei' : 'vriend', bron: 'app', taal: 'nl' });
+    toonKaart(lees());
+    meld('Welkom bij de Vrienden van WaasUp, ' + naam + '! Je kaart is klaar.');
+    p.then(function (r) {
+      toonKaart(r.kaart);
+      meld(r.bestond
+        ? 'Je was al vriend met ' + adres + '. Je bestaande kaart staat nu op dit toestel en we stuurden ze ook nog eens per mail.'
+        : 'Welkom bij de Vrienden van WaasUp, ' + naam + '! ' + (vrijw ? 'Bedankt om ook vrijwilliger te zijn. ' : '') + 'Je krijgt een welkomstmail op ' + adres + '.');
     }).catch(function () {
-      // Nog niet gekoppeld of geen internet: inschrijving via mail laten doorsturen
-      var body = 'Nieuwe vriend via de app\n\nvriendnummer: ' + kaart.n + '\nvoornaam: ' + v + '\nachternaam: ' + a + '\nemail: ' + mail +
-        '\ngsm: ' + gegevens.gsm + '\ngezin: ' + samenvatting(tel.vo, tel.ki) + (gl ? ' (' + gl + ')' : '') + '\ngeldig tot: ' + kaart.g + '\ntoestemming: ja\n\nkaartlink: ' + gegevens.link;
-      meld('Je kaart is klaar! Laat ons nog weten dat je erbij bent: <a href="mailto:info@waasup.be?subject=' +
-        encodeURIComponent('Nieuwe vriend ' + kaart.n) + '&body=' + encodeURIComponent(body) + '">stuur je inschrijving naar WaasUp</a>.');
+      meld('Je kaart is klaar! Je inschrijving gaat vanzelf naar WaasUp zodra je weer internet hebt.');
     });
   });
 
