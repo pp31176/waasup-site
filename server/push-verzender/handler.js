@@ -11,8 +11,7 @@
  * Instelling (geheime omgevingsvariabele in Scaleway): WAASUP_GEHEIM
  * Uit dat geheim maakt deze functie zelf de sleutels (VAPID), zodat er maar één geheim is.
  */
-'use strict';
-const crypto = require('crypto');
+import crypto from 'node:crypto';
 
 const CONTACT = 'mailto:info@waasup.be';
 const TOEGELATEN = /^https:\/\/([a-z0-9-]+\.)*(fcm\.googleapis\.com|push\.apple\.com|push\.services\.mozilla\.com|notify\.windows\.com|wns2-[a-z0-9-]+\.notify\.windows\.com)\//i;
@@ -134,9 +133,8 @@ async function behandel(event) {
   return antwoord(404, { ok: false, fout: 'pad' });
 }
 
-module.exports.handle = async (event) => {
+export async function handle(event) {
   try { return await behandel(event || {}); }
   catch (e) { return antwoord(500, { ok: false, fout: e.message === 'geen-geheim' ? 'geen-geheim' : 'server' }); }
-};
-// Voor de test hieronder
-module.exports._intern = { versleutel, vapid, jwt, verstuur };
+}
+export const _intern = { versleutel, vapid, jwt, verstuur };

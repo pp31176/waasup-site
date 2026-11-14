@@ -4,4 +4,4 @@
 window.WAASUP_API = 'https://script.google.com/macros/s/AKfycbyCHjxOM3StIbzPAU8vdENBlxxaDwd4yd_16zW3X0nwhEz32fvd0NlCyXmr3VfnDV8h5w/exec';
 
 // Adres van de push-verzender bij Scaleway (Parijs). Leeg = de knop Meldingen blijft verborgen.
-window.WAASUP_PUSH = '';
+window.WAASUP_PUSH = 'https://waasupbratgfkg-push.functions.fnc.fr-par.scw.cloud';

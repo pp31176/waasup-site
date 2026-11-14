@@ -233,7 +233,7 @@ function uit(o) { return ContentService.createTextOutput(JSON.stringify(o)).setM
 //  - "Inschrijvingen activiteiten": komt binnen via Tally (webhook) en wordt gebruikt voor de melding op de dag zelf.
 // Eenmalig: voer pushInstellen() uit. Daarna draait meldingenRonde() elk uur.
 
-var PUSH_URL = ''; // adres van de push-verzender bij Scaleway, zonder / op het einde
+var PUSH_URL = 'https://waasupbratgfkg-push.functions.fnc.fr-par.scw.cloud'; // adres van de push-verzender bij Scaleway, zonder / op het einde
 var TZ = 'Europe/Brussels';
 var T_ACT = 'Activiteiten', T_MELD = 'Meldingen', T_TOE = 'Toestellen', T_INS = 'Inschrijvingen activiteiten';
 var KOL_ACT = ['Titel', 'Datum', 'Uur', 'Plaats', 'Link', 'Online', 'Tally-formulier', 'Melding nieuw', 'Herinnering 1 week', 'Melding dag zelf'];
