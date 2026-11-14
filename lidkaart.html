@@ -31,6 +31,9 @@
   .kaart .naam{color:var(--navy);font-size:24px;font-weight:800;line-height:1.15;margin:0;letter-spacing:-.01em;word-break:break-word}
   .kaart .gegeven{font-size:12px;color:var(--grijs);margin:10px 0 0;line-height:1.5}
   .kaart .gegeven b{display:block;font-size:16px;color:var(--navy)}
+  #k-dieren{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:4px}
+  .kaart .dier{font-size:15px;font-weight:700;color:var(--navy);white-space:nowrap}
+  .kaart .dier i{font-style:normal;font-size:18px;margin-right:4px}
   .kaart .vos{width:96px;height:96px;object-fit:contain;margin:-10px -8px -4px 0}
   .kaart-qr{background:var(--licht);display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 20px 20px;border-top:1px dashed var(--lijn)}
   .kaart-qr .qr{background:#fff;padding:10px;border-radius:12px;line-height:0}
@@ -91,6 +94,7 @@
         <div>
           <p class="naam" id="k-naam"></p>
           <p class="gegeven" id="k-gezin-r" hidden>Geldt voor <b id="k-gezin"></b><span id="k-namen" style="display:block"></span></p>
+          <p class="gegeven dieren" id="k-dieren-r" hidden>Huisdieren <span id="k-dieren"></span></p>
           <p class="gegeven">Vriendnummer <b id="k-nummer"></b></p>
           <p class="gegeven">Geldig tot en met <b id="k-geldig"></b></p>
         </div>
@@ -269,6 +273,37 @@
   });
   function meld(html) { var m = $('melding'); m.innerHTML = html; m.hidden = !html; }
 
+  // Huisdieren: "hond Blue, kat Minou" -> icoontje + naam
+  var DIEREN = [
+    [/hond|honden|pup|dog|chien/i, '🐕'], [/kat|katten|poes|kitten|cat|chat/i, '🐈'],
+    [/vogel|parkiet|kanarie|papegaai|valkparkiet|bird|oiseau|perruche/i, '🐦'], [/kip|kippen|haan|hen|poule/i, '🐔'],
+    [/hamster/i, '🐹'], [/cavia|guinea/i, '🐹'], [/konijn|bunny|rabbit|lapin/i, '🐇'], [/muis|muizen|mouse|souris/i, '🐭'],
+    [/rat|ratten/i, '🐀'], [/goudvis|vis|vissen|fish|poisson/i, '🐟'], [/schildpad|turtle|tortoise|tortue/i, '🐢'],
+    [/slang|snake|serpent/i, '🐍'], [/hagedis|gekko|leguaan|lizard|l[ée]zard/i, '🦎'], [/paard|pony|horse|cheval/i, '🐴'],
+    [/ezel|donkey|[âa]ne/i, '🫏'], [/geit|goat|ch[èe]vre/i, '🐐'], [/schaap|sheep|mouton/i, '🐑'], [/eend|duck|canard/i, '🦆'],
+    [/fret|ferret|furet/i, '🦦'], [/varken|pig|cochon/i, '🐖'], [/spin|tarantula|araign/i, '🕷️']
+  ];
+  function toonDieren(hd) {
+    var lijst = String(hd || '').split(/\s*(?:,|;|\n|\ben\b|\band\b|\bet\b|&|\+)\s*/i).map(function (x) { return x.trim(); })
+      .filter(function (x) { return x && !/^(ja|yes|oui)$/i.test(x); });
+    var doel = $('k-dieren'); doel.textContent = '';
+    var vorig = '🐾';
+    lijst.forEach(function (x) {
+      var icoon = vorig, naam = x.replace(/[()]/g, ' ').trim().replace(/^\d+\s*x?\s+/i, '');
+      for (var i = 0; i < DIEREN.length; i++) {
+        var m = naam.match(new RegExp('(^|\\s)(' + DIEREN[i][0].source + ')(?:en|sen|s|jes|je|tjes|tje)?(?=\\s|$|:)', 'i'));
+        if (m) { icoon = DIEREN[i][1]; naam = (naam.slice(0, m.index) + ' ' + naam.slice(m.index + m[0].length)).replace(/[:\-]/g, ' ').replace(/\s+/g, ' ').trim(); break; }
+      }
+      vorig = icoon;
+      var el = document.createElement('span'); el.className = 'dier';
+      var ic = document.createElement('i'); ic.setAttribute('aria-hidden', 'true'); ic.textContent = icoon;
+      el.appendChild(ic); el.appendChild(document.createTextNode(naam ? naam.charAt(0).toUpperCase() + naam.slice(1) : ''));
+      doel.appendChild(el);
+    });
+    $('k-dieren-r').hidden = !hd;
+    if (hd && !lijst.length) doel.textContent = 'ja';
+  }
+
   function toonKaart(k) {
     $('k-naam').textContent = (k.v + ' ' + (k.a || '')).trim();
     $('k-nummer').textContent = k.n;
@@ -282,6 +317,7 @@
       $('k-gezin-r').hidden = true;
       document.querySelector('.kaart .soort').innerHTML = 'Vriend van<br>WaasUp';
     }
+    toonDieren(k.hd);
     $('k-geldig').textContent = datumNL(k.g);
     $('verlopen').hidden = !(k.g && k.g < new Date().toISOString().slice(0, 10));
     if (window.qrcode) {
@@ -334,7 +370,8 @@
     var naam = v.replace(/[<>&]/g, ''), adres = mail.replace(/[<>&]/g, '');
     var vrijw = $('i-vw').checked;
     // De kaart staat meteen op dit toestel; de inschrijving gaat automatisch naar WaasUp
-    var p = WaasUpVriend.inschrijven({ kaart: { v: v, a: a, vo: tel.vo, ki: tel.ki, gl: gl }, email: mail, gsm: $('i-gsm').value.trim(),
+    var hdTekst = $('i-hd').checked ? ($('i-hdn').value.trim() || 'ja') : '';
+    var p = WaasUpVriend.inschrijven({ kaart: { v: v, a: a, vo: tel.vo, ki: tel.ki, gl: gl, hd: hdTekst }, email: mail, gsm: $('i-gsm').value.trim(),
       rol: vrijw ? 'allebei' : 'vriend', bron: 'app', taal: 'nl',
       huisdieren: $('i-hd').checked ? ($('i-hdn').value.trim() || 'ja') : '' });
     toonKaart(lees());

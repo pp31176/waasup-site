@@ -202,7 +202,8 @@
     var knop = f.querySelector('[type="submit"]'); knop.disabled = true;
     var nvo = +(d.get('vo') || 1), nki = +(d.get('ki') || 0);
     WaasUpVriend.inschrijven({
-      kaart: { v: v, a: a, vo: nvo, ki: nki, gl: nvo + nki > 1 ? String(d.get('gl') || '') : '' },
+      kaart: { v: v, a: a, vo: nvo, ki: nki, gl: nvo + nki > 1 ? String(d.get('gl') || '') : '',
+        hd: hd && hd.checked ? (String(d.get('hdn') || '').trim() || 'ja') : '' },
       email: mail, gsm: String(d.get('gsm') || '').trim(), straat: String(d.get('straat') || '').trim(),
       rol: d.get('rol') === 'allebei' ? 'allebei' : 'vriend', bron: 'website', taal: lt,
       huisdieren: hd && hd.checked ? (String(d.get('hdn') || '').trim() || 'ja') : ''

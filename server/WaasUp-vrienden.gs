@@ -44,14 +44,19 @@ function inschrijven(d) {
   var k = d.kaart || {}, mail = schoon(d.email, 120).toLowerCase(), bron = schoon(d.bron, 20) || 'app';
   if (!/^WU-\d{4}-[A-Z0-9]{4}$/.test(k.n || '') || !schoon(k.v, 60) || !mailOk(mail)) return { ok: false, fout: 'gegevens' };
   var rol = d.rol === 'allebei' || d.rol === 'vrijwilliger' ? 'vriend + vrijwilliger' : 'vriend';
-  var kaart = maakKaart(k.n, k.v, k.a, k.g, k.vo, k.ki, k.gl);
+  var hd = d.huisdieren !== undefined ? d.huisdieren : k.hd;
+  var kaart = maakKaart(k.n, k.v, k.a, k.g, k.vo, k.ki, k.gl, hd);
   var bestaand = zoekRij(function (r) { return r[K.Vriendnummer] === kaart.n; });
   // Zelfde e-mailadres al vriend (via app of website)? Geen tweede kaart: de bestaande terugsturen.
   if (!bestaand && bron !== 'handmatig') {
     var zelfde = zoekRij(function (r) { return String(r[K['E-mail']]).toLowerCase() === mail && r[K.Vriendnummer]; });
     if (zelfde) {
-      var oud = kaartUitRij(zelfde.r);
-      if (rol !== 'vriend' && zelfde.r[K.Rol] === 'vriend') schrijfRij(zelfde.nr, { Rol: rol });
+      // Bestaande kaart (zelfde nummer) bijwerken met het gezin en de huisdieren van deze nieuwe inschrijving
+      var z = zelfde.r, oud = maakKaart(z[K.Vriendnummer], z[K.Voornaam], z[K.Achternaam], z[K['Geldig tot']], kaart.vo, kaart.ki, kaart.gl,
+        hd !== undefined ? hd : z[K.Huisdieren]);
+      var upd = { Volwassenen: oud.vo, Kinderen: oud.ki, Gezinsleden: oud.gl, Huisdieren: oud.hd || '', Kaartlink: kaartLink(oud) };
+      if (rol !== 'vriend' && z[K.Rol] === 'vriend') upd.Rol = rol;
+      schrijfRij(zelfde.nr, upd);
       welkomstmail(mail, oud, rol !== 'vriend');
       return { ok: true, bestond: true, kaart: oud };
     }
@@ -59,7 +64,7 @@ function inschrijven(d) {
   var rij = { Vriendnummer: kaart.n, Voornaam: kaart.v, Achternaam: kaart.a, 'E-mail': mail, Gsm: schoon(d.gsm, 30),
     Volwassenen: kaart.vo, Kinderen: kaart.ki, Gezinsleden: kaart.gl, 'Geldig tot': kaart.g, Rol: rol, Straat: schoon(d.straat, 120),
     Bron: bron + (d.taal && d.taal !== 'nl' ? ' (' + schoon(d.taal, 2) + ')' : ''), Toestemming: 'ja', Kaartlink: kaartLink(kaart) };
-  if (d.huisdieren !== undefined) rij.Huisdieren = schoon(d.huisdieren, 200);
+  if (hd !== undefined) rij.Huisdieren = kaart.hd || '';
   if (bestaand) { delete rij.Rol; schrijfRij(bestaand.nr, rij); } else voegToe(rij);
   if (!d.geenMail && !bestaand) welkomstmail(mail, kaart, rol !== 'vriend');
   return { ok: true, kaart: kaart };
@@ -179,13 +184,16 @@ function zoekRij(test) {
   return null;
 }
 function kaartUitRij(r) {
-  return maakKaart(r[K.Vriendnummer], r[K.Voornaam], r[K.Achternaam], r[K['Geldig tot']], Number(r[K.Volwassenen] || 1), Number(r[K.Kinderen] || 0), r[K.Gezinsleden]);
+  return maakKaart(r[K.Vriendnummer], r[K.Voornaam], r[K.Achternaam], r[K['Geldig tot']], Number(r[K.Volwassenen] || 1), Number(r[K.Kinderen] || 0), r[K.Gezinsleden], r[K.Huisdieren]);
 }
-function maakKaart(n, v, a, g, vo, ki, gl) {
+function maakKaart(n, v, a, g, vo, ki, gl, hd) {
   vo = Math.max(0, Math.min(12, parseInt(vo, 10) || 0)); ki = Math.max(0, Math.min(12, parseInt(ki, 10) || 0));
   if (vo + ki < 1) vo = 1;
-  return { n: String(n), v: schoon(v, 60), a: schoon(a, 60), g: /^\d{4}-\d{2}-\d{2}$/.test(g) ? g : (new Date().getFullYear() + 1) + '-12-31',
+  var kaart = { n: String(n), v: schoon(v, 60), a: schoon(a, 60), g: /^\d{4}-\d{2}-\d{2}$/.test(g) ? g : (new Date().getFullYear() + 1) + '-12-31',
     vo: vo, ki: ki, gl: schoon(gl, 120) };
+  hd = schoon(hd, 200);
+  if (hd) kaart.hd = hd;
+  return kaart;
 }
 function kaartLink(k) {
   var b64 = Utilities.base64EncodeWebSafe(Utilities.newBlob(JSON.stringify(k)).getBytes()).replace(/=+$/, '');
