@@ -1,0 +1,1 @@
+{ "name": "waasup-push-verzender", "version": "1.0.0", "private": true, "main": "handler.js", "description": "Pushmeldingen voor de WaasUp-app (Scaleway Serverless Functions, Node 22). Geen extra pakketten." }

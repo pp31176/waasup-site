@@ -56,3 +56,27 @@ self.addEventListener('fetch', function (e) {
     return bewaard || netwerk;
   }));
 });
+
+// Pushmeldingen: tonen en bij een tik de juiste pagina openen
+self.addEventListener('push', function (e) {
+  var m = {};
+  try { m = e.data ? e.data.json() : {}; } catch (x) { m = { tekst: e.data ? e.data.text() : '' }; }
+  e.waitUntil(self.registration.showNotification(m.titel || 'WaasUp', {
+    body: m.tekst || 'Er is nieuws van WaasUp.',
+    icon: '/images/app/icoon-192.png',
+    badge: '/images/app/icoon-192.png',
+    tag: m.tag || undefined,
+    data: { link: m.link || '/lidkaart.html' }
+  }));
+});
+
+self.addEventListener('notificationclick', function (e) {
+  e.notification.close();
+  var doel = new URL((e.notification.data && e.notification.data.link) || '/lidkaart.html', self.location.origin).href;
+  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (vensters) {
+    for (var i = 0; i < vensters.length; i++) {
+      if ('navigate' in vensters[i]) return vensters[i].navigate(doel).then(function (v) { return v && v.focus(); }).catch(function () { return self.clients.openWindow(doel); });
+    }
+    return self.clients.openWindow(doel);
+  }));
+});
