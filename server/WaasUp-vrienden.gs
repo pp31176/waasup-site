@@ -5,6 +5,7 @@
  *  - Nieuwe vrienden (uit de app of van de website) komen in het tabblad "Vrienden" van deze Google Sheet.
  *  - Elke nieuwe vriend krijgt automatisch een welkomstmail met zijn persoonlijke kaartlink.
  *  - "Kaart kwijt?": de vriend krijgt een code van 6 cijfers per mail en zet zo zijn kaart terug in de app.
+ *  - Partners (aanvragen, logo-info sturen, logo's opladen): zie het tweede bestand WaasUp-partners.gs.
  *
  * Installeren: zie de stappen in server/LEESMIJ.md
  */
@@ -30,6 +31,8 @@ function doPost(e) {
     if (d.actie === 'aanmelden') return uit(aanmelden(d));
     if (d.actie === 'code') return uit(stuurCode(d));
     if (d.actie === 'ophalen') return uit(ophalen(d));
+    if (d.actie === 'partner') return uit(partnerAanvraag(d));   // zie WaasUp-partners.gs
+    if (d.actie === 'logo') return uit(logoOpladen(d));          // zie WaasUp-partners.gs
     return uit({ ok: false, fout: 'actie' });
   } catch (x) {
     console.error(x);

@@ -144,7 +144,7 @@
     en: ['Please fill in all required fields.', 'Please enter a valid email address.', 'Please tick the consent box to continue.']
   }[lt] || null;
   if (!MELD) MELD = ['Vul alle verplichte velden in.', 'Vul een geldig e-mailadres in.', 'Vink de toestemming aan om verder te gaan.'];
-  document.querySelectorAll('form[data-onderwerp]:not([data-api])').forEach(function (f) {
+  document.querySelectorAll('form[data-onderwerp]:not([data-api]), form[data-api="partner"]').forEach(function (f) {
     f.addEventListener('submit', function (ev) {
       ev.preventDefault();
       var fout = f.querySelector('.fout');
@@ -170,6 +170,23 @@
       var url = 'mailto:info@waasup.be?subject=' + encodeURIComponent(f.getAttribute('data-onderwerp')) +
         '&body=' + encodeURIComponent(regels.join('\n'));
       vak.querySelectorAll('[data-naam]').forEach(function (el) { el.textContent = naamVeld; });
+      var API = (window.WAASUP_API || '').trim();
+      // Partnerformulier: rechtstreeks naar de backoffice (tabblad Partners); lukt dat niet, dan via mail zoals vroeger
+      if (f.getAttribute('data-api') === 'partner' && API && window.fetch) {
+        var knop = f.querySelector('[type="submit"]'); knop.disabled = true;
+        var mailWeg = function () {
+          var p = vak.querySelector('[data-tekst]');
+          if (p) p.textContent = 'Je mailprogramma opent met je aanvraag. Druk op verzenden, dan bezorgen we je het partnerdossier en nemen we binnen twee werkdagen contact op.';
+          vak.classList.add('verzonden'); window.location.href = url;
+        };
+        fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({
+          actie: 'partner', bedrijf: String(data.get('bedrijf') || '').trim(), naam: naamVeld, email: mail.trim(),
+          telefoon: String(data.get('telefoon') || '').trim(), pakket: String(data.get('pakket') || ''), toestemming: 'ja' }) })
+          .then(function (r) { return r.json(); })
+          .then(function (r) { if (!r.ok) throw new Error('fout'); vak.classList.add('verzonden'); vak.scrollIntoView({ behavior: 'smooth', block: 'start' }); })
+          .catch(mailWeg);
+        return;
+      }
       vak.classList.add('verzonden');
       window.location.href = url;
     });
