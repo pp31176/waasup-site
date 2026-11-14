@@ -143,8 +143,8 @@ function stuurMail(aan, onderwerp, inhoud) {
     '<p style="font-size:26px;font-weight:800;margin:0 0 16px">Waas<span style="color:#FDB112">Up</span></p>' + inhoud +
     '<p>Hartelijke groeten,<br>WaasUp</p><p style="font-size:12px;color:#5A6880">WaasUp vzw · Vijfhuizenstraat 13, 9140 Temse · ' +
     '<a href="' + SITE + '" style="color:#5A6880">waasup.be</a> · Uitschrijven? Antwoord gewoon op deze mail.</p></div>';
-  MailApp.sendEmail({ to: aan, subject: onderwerp, htmlBody: htmlBody, body: htmlBody.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' '),
-    name: AFZENDER, replyTo: ANTWOORD_ADRES });
+  GmailApp.sendEmail(aan, onderwerp, htmlBody.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' '),
+    { htmlBody: htmlBody, name: AFZENDER, from: 'info@waasup.be', replyTo: ANTWOORD_ADRES });
 }
 
 // ---------- Hulpjes ----------
