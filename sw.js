@@ -1,9 +1,11 @@
 // WaasUp-app: zorgt dat de vriendenkaart ook zonder internet opent.
 // Verhoog VERSIE bij elke wijziging aan de app-bestanden.
-var VERSIE = 'waasup-app-v2';
+var VERSIE = 'waasup-app-v3';
 var BESTANDEN = [
   '/lidkaart.html',
   '/assets/site.css',
+  '/assets/site.js',
+  '/assets/app-config.js',
   '/assets/vendor/qrcode.js',
   '/assets/fonts/montserrat-latin-400-normal.woff2',
   '/assets/fonts/montserrat-latin-600-normal.woff2',
@@ -35,6 +37,13 @@ self.addEventListener('fetch', function (e) {
     e.respondWith(fetch(req).catch(function () {
       return caches.match(req, { ignoreSearch: true }).then(function (r) { return r || caches.match('/lidkaart.html'); });
     }));
+    return;
+  }
+  // Instellingen: altijd eerst de nieuwste versie
+  if (/app-config\.js$/.test(new URL(req.url).pathname)) {
+    e.respondWith(fetch(req).then(function (r) {
+      var kopie = r.clone(); caches.open(VERSIE).then(function (c) { c.put(req, kopie); }); return r;
+    }).catch(function () { return caches.match(req); }));
     return;
   }
   // Rest: bewaarde versie, en ondertussen bijwerken

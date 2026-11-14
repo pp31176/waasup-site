@@ -58,12 +58,14 @@
       <p class="samen" id="samen" aria-live="polite"></p>
       <div class="veld"><label for="gl">Voornamen van de andere gezinsleden (niet verplicht)</label><input id="gl" class="in" placeholder="bv. Leen, Lotte, Mats"><small>Alleen voornamen, geen achternaam of andere gegevens van kinderen.</small></div>
     </fieldset>
+    <div class="veld"><label for="mail">E-mailadres (niet verplicht, maar nodig om de kaart later terug te halen in de app)</label><input id="mail" class="in" type="email" placeholder="naam@voorbeeld.be"></div>
     <div class="veld"><label for="tel">Gsm-nummer voor WhatsApp (niet verplicht)</label><input id="tel" class="in" type="tel" placeholder="0470 12 34 56"></div>
     <p class="fout" id="fout" role="alert"></p>
     <button class="btn btn-navy" type="submit" style="align-self:flex-start">Maak de link</button>
   </form>
 
   <div class="uit" id="uit" hidden>
+    <p id="api-status" style="margin:0;font-weight:600"></p>
     <strong>Bericht om door te sturen</strong>
     <textarea id="bericht" readonly></textarea>
     <div class="knoppen">
@@ -74,6 +76,7 @@
     </div>
   </div>
 </main>
+<script src="assets/app-config.js"></script>
 <script>
 (function () {
   function b64url(s) {
@@ -160,6 +163,17 @@
     document.getElementById('mail').href = 'mailto:?subject=' + encodeURIComponent('Je vriendenkaart van WaasUp') + '&body=' + encodeURIComponent(tekst);
     document.getElementById('bekijk').href = link;
     document.getElementById('uit').hidden = false;
+    // Ook in de vriendenlijst (Google Sheet) zetten, zodat de vriend zijn kaart later zelf kan terughalen
+    var st = document.getElementById('api-status'), API = (window.WAASUP_API || '').trim(), mail = f.mail.value.trim();
+    st.textContent = '';
+    if (API && mail) {
+      st.textContent = 'Bezig met opslaan in de vriendenlijst…';
+      fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ actie: 'inschrijven', kaart: { n: n, v: v, a: a, g: g, vo: tel.vo, ki: tel.ki, gl: gl }, email: mail, gsm: f.tel.value.trim(), link: link, bron: aanpassen ? 'aangepast' : 'handmatig', geenMail: true }) })
+        .then(function (r) { return r.json(); })
+        .then(function (j) { if (!j.ok) throw 0; st.textContent = '✓ Opgeslagen in de vriendenlijst.'; })
+        .catch(function () { st.textContent = 'Niet opgeslagen in de vriendenlijst (geen verbinding). Noteer het nummer zelf.'; });
+    } else if (API) { st.textContent = 'Tip: vul een e-mailadres in, dan komt de kaart ook in de vriendenlijst.'; }
   });
   document.getElementById('kopieer').addEventListener('click', function () {
     var t = document.getElementById('bericht');

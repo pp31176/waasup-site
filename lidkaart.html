@@ -53,6 +53,22 @@
   .app .btn-licht{border-color:rgba(255,255,255,.4);color:#fff;background:transparent}.app .btn-licht:hover{background:rgba(255,255,255,.08);color:#fff}
   .klein{font-size:13px;color:var(--blauwgrijs);text-align:center;margin:0}
   .klein button{background:none;border:0;color:var(--blauwgrijs);text-decoration:underline;font:inherit;cursor:pointer;padding:0}
+  .formblok label,.formblok legend,.formblok .tellers span{color:#fff}
+  .formblok small{color:var(--blauwgrijs);font-size:13px}
+  .formblok .akkoord{color:var(--blauwgrijs)}.formblok .akkoord a{color:#fff}
+  .formblok .fout{color:#FFB4A8}
+  .gezin{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+  .gezin legend{margin-bottom:10px}
+  .tellers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .tellers span{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
+  .teller{display:flex;align-items:center;gap:10px}
+  .teller button{width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.4);background:transparent;color:#fff;font:700 22px/1 Montserrat,Arial,sans-serif;cursor:pointer}
+  .teller button:disabled{opacity:.3;cursor:default}
+  .teller output{min-width:2ch;text-align:center;font-weight:800;font-size:20px}
+  .plak summary{cursor:pointer;color:var(--blauwgrijs);font-size:14px;text-decoration:underline}
+  .melding{margin:0;background:rgba(253,177,18,.14);border:1px solid rgba(253,177,18,.5);color:#fff;border-radius:12px;padding:14px 16px;font-size:14px;line-height:1.5}
+  .melding a{color:var(--geel)}
+  .btn[disabled]{opacity:.6;cursor:wait}
   [hidden]{display:none!important}
 </style>
 </head>
@@ -92,12 +108,70 @@
   <section id="zonderkaart" class="leeg stack" hidden>
     <img src="images/vos-sleutel.png" alt="De WaasUp-vos met de sleutel van Temse">
     <h1>Je digitale vriendenkaart</h1>
-    <p class="lead" style="color:var(--blauwgrijs)">Als vriend van WaasUp krijg je van ons een persoonlijke link. Open die link op je gsm, dan verschijnt je kaart hier, ook zonder internet.</p>
+    <p class="lead" style="color:var(--blauwgrijs)">Word gratis vriend van WaasUp. Je kaart verschijnt meteen hier in de app, ook zonder internet.</p>
     <div class="knoppen" style="justify-content:center">
-      <a class="btn btn-geel" href="doe-mee.html">Word vriend</a>
-      <a class="btn btn-licht" href="mailto:info@waasup.be?subject=Mijn%20vriendenkaart">Link kwijt?</a>
+      <button class="btn btn-geel" type="button" data-toon="inschrijven">Word vriend</button>
+      <button class="btn btn-licht" type="button" data-toon="herstel">Kaart kwijt?</button>
     </div>
   </section>
+
+  <!-- Inschrijven in de app -->
+  <section class="blok formblok" id="inschrijven" hidden aria-labelledby="ins-titel">
+    <h2 id="ins-titel">Word vriend van WaasUp</h2>
+    <form id="f-ins" class="stack" novalidate>
+      <div class="velden2">
+        <div class="veld"><label for="i-v">Voornaam</label><input id="i-v" class="in" autocomplete="given-name" required></div>
+        <div class="veld"><label for="i-a">Achternaam</label><input id="i-a" class="in" autocomplete="family-name" required></div>
+      </div>
+      <div class="veld"><label for="i-mail">E-mailadres</label><input id="i-mail" class="in" type="email" autocomplete="email" placeholder="naam@voorbeeld.be" required><small>Hiermee haal je je kaart terug als je van gsm verandert.</small></div>
+      <div class="veld"><label for="i-gsm">Gsm-nummer (niet verplicht)</label><input id="i-gsm" class="in" type="tel" autocomplete="tel" placeholder="0470 12 34 56"></div>
+      <fieldset class="gezin">
+        <legend>Wie hoort bij je kaart?</legend>
+        <div class="tellers">
+          <div><span id="l-vo">Volwassenen</span><div class="teller" role="group" aria-labelledby="l-vo"><button type="button" data-t="vo" data-d="-1" aria-label="Een volwassene minder">−</button><output id="t-vo">1</output><button type="button" data-t="vo" data-d="1" aria-label="Een volwassene meer">+</button></div></div>
+          <div><span id="l-ki">Kinderen</span><div class="teller" role="group" aria-labelledby="l-ki"><button type="button" data-t="ki" data-d="-1" aria-label="Een kind minder">−</button><output id="t-ki">0</output><button type="button" data-t="ki" data-d="1" aria-label="Een kind meer">+</button></div></div>
+        </div>
+        <div class="veld" id="gl-veld" hidden><label for="i-gl">Voornamen van de andere gezinsleden (niet verplicht)</label><input id="i-gl" class="in" placeholder="bv. Leen, Lotte, Mats"></div>
+      </fieldset>
+      <label class="akkoord"><input type="checkbox" id="i-ok"><span>Ik geef WaasUp vzw toestemming om mijn gegevens te gebruiken om me te informeren over activiteiten. Ik kan me altijd uitschrijven. Lees de <a href="privacy.html">privacyverklaring</a>.</span></label>
+      <p class="fout" id="i-fout" role="alert"></p>
+      <div class="knoppen">
+        <button class="btn btn-geel" type="submit">Maak mijn kaart</button>
+        <button class="btn btn-licht" type="button" data-toon="zonderkaart">Annuleren</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Kaart terughalen -->
+  <section class="blok formblok" id="herstel" hidden aria-labelledby="her-titel">
+    <h2 id="her-titel">Kaart terughalen</h2>
+    <div id="h-api" class="stack">
+      <form id="f-mail" class="stack" novalidate>
+        <p>Vul het e-mailadres in waarmee je vriend werd. Je krijgt een code van 6 cijfers.</p>
+        <div class="veld"><label for="h-mail">E-mailadres</label><input id="h-mail" class="in" type="email" autocomplete="email" required></div>
+        <button class="btn btn-geel" type="submit">Stuur mij een code</button>
+      </form>
+      <form id="f-code" class="stack" novalidate hidden>
+        <p id="h-uitleg"></p>
+        <div class="veld"><label for="h-code">Code uit de mail</label><input id="h-code" class="in" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]*" style="font-size:24px;letter-spacing:.3em;font-weight:800"></div>
+        <button class="btn btn-geel" type="submit">Kaart terugzetten</button>
+      </form>
+    </div>
+    <details class="plak" style="margin-top:16px">
+      <summary>Ik heb mijn persoonlijke link nog</summary>
+      <form id="f-link" class="stack" novalidate style="margin-top:10px">
+        <div class="veld"><label for="h-link">Plak hier je link</label><input id="h-link" class="in" placeholder="https://waasup.be/lidkaart.html#k=…"></div>
+        <button class="btn btn-licht" type="submit">Kaart terugzetten</button>
+      </form>
+    </details>
+    <p class="fout" id="h-fout" role="alert" style="margin-top:12px"></p>
+    <div class="knoppen" style="margin-top:14px">
+      <button class="btn btn-licht" type="button" data-toon="zonderkaart">Terug</button>
+      <a class="btn btn-licht" id="h-mailto" href="mailto:info@waasup.be?subject=Mijn%20vriendenkaart" hidden>Mail WaasUp</a>
+    </div>
+  </section>
+
+  <p class="melding" id="melding" role="status" hidden></p>
 
   <section class="blok" aria-labelledby="voordelen-titel">
     <h2 id="voordelen-titel">Jouw voordelen als vriend</h2>
@@ -120,7 +194,7 @@
   <section class="blok" id="installeer" hidden aria-labelledby="inst-titel">
     <h2 id="inst-titel">Zet WaasUp op je beginscherm</h2>
     <p id="inst-android" hidden>Tik op de knop hieronder. Daarna open je je kaart met één tik op het vos-icoontje.</p>
-    <p id="inst-ios" hidden>Tik in Safari onderaan op <b>Deel</b> (het vierkantje met de pijl) en kies <b>Zet op beginscherm</b>. Daarna open je je kaart met één tik op het vos-icoontje.</p>
+    <p id="inst-ios" hidden>Tik in Safari onderaan op <b>Deel</b> (het vierkantje met de pijl) en kies <b>Zet op beginscherm</b>. Open daarna de app via het vos-icoontje. Zie je je kaart daar niet, tik dan op <b>Kaart kwijt?</b>: de iPhone bewaart de app apart van Safari.</p>
     <p id="inst-anders" hidden>Open deze pagina op je gsm en kies in het menu van je browser <b>Toevoegen aan startscherm</b>.</p>
     <button class="btn btn-geel" id="inst-knop" type="button" hidden style="margin-top:14px">Installeer de app</button>
   </section>
@@ -129,38 +203,45 @@
   <p class="klein">Je kaart staat alleen op dit toestel. <a href="privacy.html" style="color:var(--blauwgrijs)">Privacy</a></p>
 </main>
 
+<script src="assets/app-config.js"></script>
 <script src="assets/vendor/qrcode.js"></script>
 <script>
 (function () {
   var SLEUTEL = 'waasup-vriendenkaart';
+  var API = (window.WAASUP_API || '').trim();
+  function $(id) { return document.getElementById(id); }
 
   function bewaar(k) { try { localStorage.setItem(SLEUTEL, JSON.stringify(k)); } catch (e) {} }
   function lees() { try { return JSON.parse(localStorage.getItem(SLEUTEL)); } catch (e) { return null; } }
   function wis() { try { localStorage.removeItem(SLEUTEL); } catch (e) {} }
+  function b64url(s) { return btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+  function linkVan(k) { return location.origin + '/lidkaart.html#k=' + b64url(JSON.stringify(k)); }
 
-  // Een persoonlijke link ziet eruit als lidkaart.html#k=...  (het deel na # gaat nooit naar de server)
-  function uitLink() {
-    var m = location.hash.match(/[#&]k=([^&]+)/);
+  // Persoonlijke link: lidkaart.html#k=...  (het deel na # gaat nooit naar de server)
+  function uitTekst(t) {
+    var m = String(t || '').match(/[#&]k=([^&\s]+)/);
     if (!m) return null;
     try {
       var b64 = m[1].replace(/-/g, '+').replace(/_/g, '/');
       while (b64.length % 4) b64 += '=';
-      var tekst = decodeURIComponent(escape(atob(b64)));
-      var k = JSON.parse(tekst);
-      if (!k.n || !k.v) return null;
-      return k;
+      var k = JSON.parse(decodeURIComponent(escape(atob(b64))));
+      return (k.n && k.v) ? k : null;
     } catch (e) { return null; }
   }
 
-  // Link geopend terwijl de pagina al openstond: opnieuw laden zodat de kaart verschijnt
+  // Server (Google Apps Script) aanspreken. text/plain = geen extra CORS-vraag vooraf.
+  function api(actie, data) {
+    if (!API) return Promise.reject(new Error('geen-api'));
+    data = data || {}; data.actie = actie;
+    return fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(data) })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { if (!j || !j.ok) throw new Error((j && j.fout) || 'fout'); return j; });
+  }
+
   window.addEventListener('hashchange', function () { if (/[#&]k=/.test(location.hash)) location.reload(); });
 
-  var nieuw = uitLink();
-  if (nieuw) {
-    bewaar(nieuw);
-    history.replaceState(null, '', location.pathname); // link niet in de adresbalk laten staan
-  }
-  var k = nieuw || lees();
+  var nieuw = uitTekst(location.hash);
+  if (nieuw) { bewaar(nieuw); history.replaceState(null, '', location.pathname); }
 
   function datumNL(iso) {
     if (!iso) return 'onbepaald';
@@ -168,63 +249,161 @@
     var maanden = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
     return parseInt(d[2], 10) + ' ' + maanden[parseInt(d[1], 10) - 1] + ' ' + d[0];
   }
+  function mv(x, een, veel) { return x + ' ' + (x === 1 ? een : veel); }
+  function samenvatting(vo, ki) { var d = []; if (vo) d.push(mv(vo, 'volwassene', 'volwassenen')); if (ki) d.push(mv(ki, 'kind', 'kinderen')); return d.join(' en '); }
 
-  if (k) {
-    document.getElementById('metkaart').hidden = false;
-    document.getElementById('wis').hidden = false;
-    var naam = (k.v + ' ' + (k.a || '')).trim();
-    document.getElementById('k-naam').textContent = naam;
-    document.getElementById('k-nummer').textContent = k.n;
-    // Gezin: oudere kaarten zonder samenstelling = 1 volwassene
-    var vo = typeof k.vo === 'number' ? k.vo : 1, ki = typeof k.ki === 'number' ? k.ki : 0, tot = vo + ki;
-    function mv(x, een, veel) { return x + ' ' + (x === 1 ? een : veel); }
-    if (tot > 1 || ki > 0) {
-      var d = []; if (vo) d.push(mv(vo, 'volwassene', 'volwassenen')); if (ki) d.push(mv(ki, 'kind', 'kinderen'));
-      document.getElementById('k-gezin').textContent = d.join(' en ');
-      if (k.gl) document.getElementById('k-namen').textContent = 'Met ' + k.gl;
-      document.getElementById('k-gezin-r').hidden = false;
+  var schermen = ['metkaart', 'zonderkaart', 'inschrijven', 'herstel'];
+  function toon(id) {
+    schermen.forEach(function (s) { $(s).hidden = s !== id; });
+    $('wis').hidden = id !== 'metkaart';
+    window.scrollTo(0, 0);
+    var eerste = $(id).querySelector('input');
+    if (eerste && id !== 'zonderkaart') setTimeout(function () { eerste.focus(); }, 50);
+  }
+  [].forEach.call(document.querySelectorAll('[data-toon]'), function (b) {
+    b.addEventListener('click', function () { meld(''); toon(b.getAttribute('data-toon')); });
+  });
+  function meld(html) { var m = $('melding'); m.innerHTML = html; m.hidden = !html; }
+
+  function toonKaart(k) {
+    $('k-naam').textContent = (k.v + ' ' + (k.a || '')).trim();
+    $('k-nummer').textContent = k.n;
+    var vo = typeof k.vo === 'number' ? k.vo : 1, ki = typeof k.ki === 'number' ? k.ki : 0;
+    if (vo + ki > 1 || ki > 0) {
+      $('k-gezin').textContent = samenvatting(vo, ki);
+      $('k-namen').textContent = k.gl ? 'Met ' + k.gl : '';
+      $('k-gezin-r').hidden = false;
       document.querySelector('.kaart .soort').innerHTML = 'Gezin<br>vriend van<br>WaasUp';
+    } else {
+      $('k-gezin-r').hidden = true;
+      document.querySelector('.kaart .soort').innerHTML = 'Vriend van<br>WaasUp';
     }
-    document.getElementById('k-geldig').textContent = datumNL(k.g);
-    var vandaag = new Date().toISOString().slice(0, 10);
-    if (k.g && k.g < vandaag) document.getElementById('verlopen').hidden = false;
+    $('k-geldig').textContent = datumNL(k.g);
+    $('verlopen').hidden = !(k.g && k.g < new Date().toISOString().slice(0, 10));
     if (window.qrcode) {
       var q = qrcode(0, 'M');
-      q.addData('WAASUP-VRIEND|' + k.n + '|' + naam + '|' + (k.g || '') + '|V' + vo + 'K' + ki);
+      q.addData('WAASUP-VRIEND|' + k.n + '|' + $('k-naam').textContent + '|' + (k.g || '') + '|V' + vo + 'K' + ki);
       q.make();
-      document.getElementById('k-qr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+      $('k-qr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
     }
-  } else {
-    document.getElementById('zonderkaart').hidden = false;
+    toon('metkaart');
   }
 
-  document.getElementById('wis-knop').addEventListener('click', function () {
-    if (confirm('Je vriendenkaart van dit toestel verwijderen? Je kan ze altijd terugzetten met je persoonlijke link.')) {
-      wis(); location.reload();
-    }
+  var k = nieuw || lees();
+  if (k) toonKaart(k); else toon('zonderkaart');
+
+  $('wis-knop').addEventListener('click', function () {
+    if (confirm('Je vriendenkaart van dit toestel verwijderen? Je kan ze altijd terughalen met je e-mailadres of je persoonlijke link.')) { wis(); location.reload(); }
   });
 
-  // App op het beginscherm
+  // ---------- Inschrijven ----------
+  var MAX = 12, tel = { vo: 1, ki: 0 };
+  function toonTeller() {
+    $('t-vo').textContent = tel.vo; $('t-ki').textContent = tel.ki;
+    var tot = tel.vo + tel.ki;
+    [].forEach.call(document.querySelectorAll('.teller button'), function (b) {
+      var w = tel[b.dataset.t], d = +b.dataset.d;
+      b.disabled = d < 0 ? (w === 0 || tot === 1) : (w >= MAX);
+    });
+    $('gl-veld').hidden = tot < 2;
+  }
+  [].forEach.call(document.querySelectorAll('.teller button'), function (b) {
+    b.addEventListener('click', function () {
+      var t = b.dataset.t, nw = tel[t] + (+b.dataset.d), ander = t === 'vo' ? tel.ki : tel.vo;
+      if (nw < 0 || nw > MAX || nw + ander < 1) return;
+      tel[t] = nw; toonTeller();
+    });
+  });
+  toonTeller();
+
+  // Vriendnummer automatisch: WU-JJMM-XXXX (geen verwarrende tekens zoals O/0 en I/1)
+  function nieuwNummer() {
+    var tekens = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', r = '', d = new Date();
+    var buf = new Uint32Array(4); (window.crypto || window.msCrypto).getRandomValues(buf);
+    for (var i = 0; i < 4; i++) r += tekens.charAt(buf[i] % tekens.length);
+    return 'WU-' + String(d.getFullYear()).slice(2) + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + r;
+  }
+  function geldigTot() { return (new Date().getFullYear() + 1) + '-12-31'; }
+  var mailOk = function (m) { return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m); };
+
+  $('f-ins').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var fout = $('i-fout'), v = $('i-v').value.trim(), a = $('i-a').value.trim(), mail = $('i-mail').value.trim();
+    if (!v || !a) { fout.textContent = 'Vul je voornaam en achternaam in.'; return; }
+    if (!mailOk(mail)) { fout.textContent = 'Vul een geldig e-mailadres in.'; $('i-mail').focus(); return; }
+    if (!$('i-ok').checked) { fout.textContent = 'Vink de toestemming aan om verder te gaan.'; return; }
+    fout.textContent = '';
+    var gl = tel.vo + tel.ki > 1 ? $('i-gl').value.split(',').map(function (x) { return x.trim(); }).filter(Boolean).join(', ') : '';
+    var kaart = { n: nieuwNummer(), v: v, a: a, g: geldigTot(), vo: tel.vo, ki: tel.ki, gl: gl };
+    // De kaart staat meteen op dit toestel, ook als het internet even wegvalt
+    bewaar(kaart); toonKaart(kaart);
+    var gegevens = { kaart: kaart, email: mail, gsm: $('i-gsm').value.trim(), link: linkVan(kaart), bron: 'app' };
+    meld('Welkom bij de Vrienden van WaasUp, ' + v.replace(/[<>&]/g, '') + '! Je kaart is klaar.');
+    api('inschrijven', gegevens).then(function () {
+      meld('Welkom bij de Vrienden van WaasUp, ' + v.replace(/[<>&]/g, '') + '! Je kaart is klaar en je krijgt een welkomstmail op ' + mail.replace(/[<>&]/g, '') + '.');
+    }).catch(function () {
+      // Nog niet gekoppeld of geen internet: inschrijving via mail laten doorsturen
+      var body = 'Nieuwe vriend via de app\n\nvriendnummer: ' + kaart.n + '\nvoornaam: ' + v + '\nachternaam: ' + a + '\nemail: ' + mail +
+        '\ngsm: ' + gegevens.gsm + '\ngezin: ' + samenvatting(tel.vo, tel.ki) + (gl ? ' (' + gl + ')' : '') + '\ngeldig tot: ' + kaart.g + '\ntoestemming: ja\n\nkaartlink: ' + gegevens.link;
+      meld('Je kaart is klaar! Laat ons nog weten dat je erbij bent: <a href="mailto:info@waasup.be?subject=' +
+        encodeURIComponent('Nieuwe vriend ' + kaart.n) + '&body=' + encodeURIComponent(body) + '">stuur je inschrijving naar WaasUp</a>.');
+    });
+  });
+
+  // ---------- Kaart terughalen ----------
+  if (!API) { $('h-api').hidden = true; $('h-mailto').hidden = false; document.querySelector('.plak').open = true; }
+  var herMail = '';
+  $('f-mail').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var fout = $('h-fout'), knop = this.querySelector('button');
+    herMail = $('h-mail').value.trim();
+    if (!mailOk(herMail)) { fout.textContent = 'Vul een geldig e-mailadres in.'; return; }
+    fout.textContent = ''; knop.disabled = true;
+    api('code', { email: herMail }).then(function () {
+      $('f-mail').hidden = true; $('f-code').hidden = false;
+      $('h-uitleg').textContent = 'Als ' + herMail + ' bij ons gekend is, krijg je binnen een minuut een mail met een code. Kijk ook even bij je spam.';
+      $('h-code').focus();
+    }).catch(function () {
+      fout.textContent = 'Dat lukte niet. Heb je internet? Probeer straks opnieuw of mail info@waasup.be.';
+      $('h-mailto').hidden = false;
+    }).then(function () { knop.disabled = false; });
+  });
+  $('f-code').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var fout = $('h-fout'), knop = this.querySelector('button'), code = $('h-code').value.replace(/\D/g, '');
+    if (code.length !== 6) { fout.textContent = 'De code heeft 6 cijfers.'; return; }
+    fout.textContent = ''; knop.disabled = true;
+    api('ophalen', { email: herMail, code: code }).then(function (j) {
+      bewaar(j.kaart); toonKaart(j.kaart); meld('Je kaart staat terug op dit toestel.');
+    }).catch(function (err) {
+      fout.textContent = err.message === 'code' ? 'Die code klopt niet of is verlopen. Vraag een nieuwe code.' : 'Dat lukte niet. Probeer straks opnieuw.';
+      if (err.message === 'code') { $('f-code').hidden = true; $('f-mail').hidden = false; }
+    }).then(function () { knop.disabled = false; });
+  });
+  $('f-link').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var kaart = uitTekst($('h-link').value);
+    if (!kaart) { $('h-fout').textContent = 'Dit is geen geldige link van een vriendenkaart.'; return; }
+    bewaar(kaart); toonKaart(kaart); meld('Je kaart staat terug op dit toestel.');
+  });
+
+  // ---------- App op het beginscherm ----------
   var standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
   var ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  var inst = document.getElementById('installeer');
+  var inst = $('installeer');
   if (!standalone) {
-    if (ios) { inst.hidden = false; document.getElementById('inst-ios').hidden = false; }
+    if (ios) { inst.hidden = false; $('inst-ios').hidden = false; }
     var uitgesteld = null;
     window.addEventListener('beforeinstallprompt', function (e) {
       e.preventDefault(); uitgesteld = e;
-      inst.hidden = false;
-      document.getElementById('inst-anders').hidden = true;
-      document.getElementById('inst-android').hidden = false;
-      document.getElementById('inst-knop').hidden = false;
+      inst.hidden = false; $('inst-anders').hidden = true; $('inst-android').hidden = false; $('inst-knop').hidden = false;
     });
-    document.getElementById('inst-knop').addEventListener('click', function () {
+    $('inst-knop').addEventListener('click', function () {
       if (!uitgesteld) return;
-      uitgesteld.prompt();
-      uitgesteld.userChoice.then(function () { inst.hidden = true; });
+      uitgesteld.prompt(); uitgesteld.userChoice.then(function () { inst.hidden = true; });
     });
     if (!ios && /android|mobile/i.test(navigator.userAgent)) {
-      setTimeout(function () { if (inst.hidden) { inst.hidden = false; document.getElementById('inst-anders').hidden = false; } }, 1500);
+      setTimeout(function () { if (inst.hidden) { inst.hidden = false; $('inst-anders').hidden = false; } }, 1500);
     }
   }
 

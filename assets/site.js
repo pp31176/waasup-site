@@ -162,15 +162,36 @@
       var ak = f.querySelector('[name="akkoord"]');
       if (ak && !ak.checked) { fout.textContent = MELD[2]; return; }
       fout.textContent = '';
+      var vak = f.closest('.vak');
+      var naamVeld = String(data.get('voornaam') || data.get('naam') || '').trim();
+      // Gekoppeld aan de WaasUp-server? Dan gaat de inschrijving automatisch, zonder mailprogramma.
+      var API = (window.WAASUP_API || '').trim();
+      if (API && f.hasAttribute('data-api')) {
+        var obj = {}; data.forEach(function (w, s) { if (s !== 'akkoord') obj[s] = w; });
+        obj.actie = f.getAttribute('data-api'); obj.taal = lt; obj.toestemming = ak ? 'ja' : '';
+        var knop = f.querySelector('[type="submit"]'); knop.disabled = true;
+        fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(obj) })
+          .then(function (r) { return r.json(); })
+          .then(function (j) {
+            if (!j || !j.ok) throw 0;
+            vak.querySelectorAll('[data-naam]').forEach(function (el) { el.textContent = naamVeld; });
+            var t = vak.querySelector('[data-api-tekst]'); if (t) t.textContent = t.getAttribute('data-api-tekst');
+            vak.classList.add('verzonden');
+          })
+          .catch(function () { knop.disabled = false; verstuurViaMail(); });
+        return;
+      }
+      verstuurViaMail();
+      function verstuurViaMail() {
       var regels = [];
       data.forEach(function (waarde, sleutel) { if (sleutel !== 'akkoord') regels.push(sleutel + ': ' + waarde); });
       if (ak) regels.push('toestemming: ja');
       var url = 'mailto:info@waasup.be?subject=' + encodeURIComponent(f.getAttribute('data-onderwerp')) +
         '&body=' + encodeURIComponent(regels.join('\n'));
-      var vak = f.closest('.vak');
-      vak.querySelectorAll('[data-naam]').forEach(function (el) { el.textContent = String(data.get('voornaam') || data.get('naam') || '').trim(); });
+      vak.querySelectorAll('[data-naam]').forEach(function (el) { el.textContent = naamVeld; });
       vak.classList.add('verzonden');
       window.location.href = url;
+      }
     });
   });
 })();
@@ -207,4 +228,18 @@
   }
   var wrap = document.querySelector('.kop .wrap');
   if (wrap) { var mnav = wrap.querySelector('.mnav'); wrap.insertBefore(maak(), mnav || null); }
+})();
+
+// In de WaasUp-app (op het beginscherm) is er geen terugknop: toon bovenaan "Terug naar mijn kaart"
+(function () {
+  var app = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  if (!app || /lidkaart\.html$/.test(location.pathname)) return;
+  var taal = (document.documentElement.lang || 'nl').slice(0, 2);
+  var tekst = { nl: 'Terug naar mijn kaart', fr: 'Retour à ma carte', en: 'Back to my card' }[taal] || 'Terug naar mijn kaart';
+  var balk = document.createElement('a');
+  balk.href = '/lidkaart.html';
+  balk.className = 'appterug';
+  balk.innerHTML = '<span aria-hidden="true">←</span> ' + tekst;
+  balk.setAttribute('style', 'position:sticky;top:0;z-index:1000;display:flex;align-items:center;gap:8px;padding:calc(env(safe-area-inset-top) + 12px) 18px 12px;background:#011737;color:#fff;font-weight:700;font-size:16px;text-decoration:none');
+  document.body.insertBefore(balk, document.body.firstChild);
 })();
