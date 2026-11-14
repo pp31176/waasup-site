@@ -15,7 +15,7 @@ var BLAD = 'Vrienden';
 var AFZENDER = 'WaasUp';
 var ANTWOORD_ADRES = 'info@waasup.be';
 var KOLOMMEN = ['Datum', 'Vriendnummer', 'Voornaam', 'Achternaam', 'E-mail', 'Gsm', 'Volwassenen', 'Kinderen',
-  'Gezinsleden', 'Geldig tot', 'Rol', 'Straat', 'Bron', 'Toestemming', 'Kaartlink'];
+  'Gezinsleden', 'Geldig tot', 'Rol', 'Straat', 'Bron', 'Toestemming', 'Kaartlink', 'Huisdieren'];
 var K = {}; KOLOMMEN.forEach(function (n, i) { K[n] = i; });
 
 function doGet() { return ContentService.createTextOutput('De WaasUp vrienden-server werkt.'); }
@@ -59,6 +59,7 @@ function inschrijven(d) {
   var rij = { Vriendnummer: kaart.n, Voornaam: kaart.v, Achternaam: kaart.a, 'E-mail': mail, Gsm: schoon(d.gsm, 30),
     Volwassenen: kaart.vo, Kinderen: kaart.ki, Gezinsleden: kaart.gl, 'Geldig tot': kaart.g, Rol: rol, Straat: schoon(d.straat, 120),
     Bron: bron + (d.taal && d.taal !== 'nl' ? ' (' + schoon(d.taal, 2) + ')' : ''), Toestemming: 'ja', Kaartlink: kaartLink(kaart) };
+  if (d.huisdieren !== undefined) rij.Huisdieren = schoon(d.huisdieren, 200);
   if (bestaand) { delete rij.Rol; schrijfRij(bestaand.nr, rij); } else voegToe(rij);
   if (!d.geenMail && !bestaand) welkomstmail(mail, kaart, rol !== 'vriend');
   return { ok: true, kaart: kaart };
@@ -153,6 +154,11 @@ function blad() {
   var ss = SpreadsheetApp.openById(SHEET_ID), b = ss.getSheetByName(BLAD);
   if (!b) b = ss.insertSheet(BLAD);
   if (b.getLastRow() === 0) { b.appendRow(KOLOMMEN); b.setFrozenRows(1); b.getRange(1, 1, 1, KOLOMMEN.length).setFontWeight('bold'); }
+  // Nieuwe kolommen (zoals Huisdieren) achteraan bijzetten in een bestaand blad
+  else if (b.getLastColumn() < KOLOMMEN.length) {
+    var van = b.getLastColumn() + 1, nieuw = KOLOMMEN.slice(van - 1);
+    b.getRange(1, van, 1, nieuw.length).setValues([nieuw]).setFontWeight('bold');
+  }
   return b;
 }
 function voegToe(rij) {

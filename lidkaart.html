@@ -133,6 +133,8 @@
         </div>
         <div class="veld" id="gl-veld" hidden><label for="i-gl">Voornamen van de andere gezinsleden (niet verplicht)</label><input id="i-gl" class="in" placeholder="Leen, Lotte, Mats" autocapitalize="words"><small>(alleen voornamen, gescheiden door een komma: Leen, Lotte, Mats)</small></div>
       </fieldset>
+      <label class="akkoord"><input type="checkbox" id="i-hd"><span><b style="color:#fff">We hebben huisdieren</b></span></label>
+      <div class="veld" id="hd-veld" hidden><label for="i-hdn">Welke dieren en hoe heten ze? (niet verplicht)</label><input id="i-hdn" class="in" placeholder="Hond Blue, kat Minou" maxlength="200"><small>(bijvoorbeeld: hond Blue, kat Minou)</small></div>
       <label class="akkoord"><input type="checkbox" id="i-vw"><span><b style="color:#fff">Ik help ook graag als vrijwilliger</b> op de dag van een activiteit (onthaal, parcours, opbouw). Jij kiest wanneer.</span></label>
       <label class="akkoord"><input type="checkbox" id="i-ok"><span>Ik geef WaasUp vzw toestemming om mijn gegevens te gebruiken om me te informeren over activiteiten. Ik kan me altijd uitschrijven. Lees de <a href="privacy.html">privacyverklaring</a>.</span></label>
       <p class="fout" id="i-fout" role="alert"></p>
@@ -317,6 +319,7 @@
     });
   });
   toonTeller();
+  $('i-hd').addEventListener('change', function () { $('hd-veld').hidden = !this.checked; });
 
   var mailOk = function (m) { return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m); };
 
@@ -332,7 +335,8 @@
     var vrijw = $('i-vw').checked;
     // De kaart staat meteen op dit toestel; de inschrijving gaat automatisch naar WaasUp
     var p = WaasUpVriend.inschrijven({ kaart: { v: v, a: a, vo: tel.vo, ki: tel.ki, gl: gl }, email: mail, gsm: $('i-gsm').value.trim(),
-      rol: vrijw ? 'allebei' : 'vriend', bron: 'app', taal: 'nl' });
+      rol: vrijw ? 'allebei' : 'vriend', bron: 'app', taal: 'nl',
+      huisdieren: $('i-hd').checked ? ($('i-hdn').value.trim() || 'ja') : '' });
     toonKaart(lees());
     meld('Welkom bij de Vrienden van WaasUp, ' + naam + '! Je kaart is klaar.');
     p.then(function (r) {

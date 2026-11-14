@@ -189,6 +189,8 @@
   var vo = f.querySelector('[name="vo"]'), ki = f.querySelector('[name="ki"]'), glv = f.querySelector('[data-gl]');
   function gezin() { if (glv) glv.hidden = (+vo.value) + (+ki.value) < 2; }
   if (vo && ki) { vo.addEventListener('change', gezin); ki.addEventListener('change', gezin); gezin(); }
+  var hd = f.querySelector('[name="hd"]'), hdv = f.querySelector('[data-hd]');
+  if (hd && hdv) hd.addEventListener('change', function () { hdv.hidden = !hd.checked; });
   f.addEventListener('submit', function (ev) {
     ev.preventDefault();
     var fout = f.querySelector('.fout'), d = new FormData(f);
@@ -202,7 +204,8 @@
     WaasUpVriend.inschrijven({
       kaart: { v: v, a: a, vo: nvo, ki: nki, gl: nvo + nki > 1 ? String(d.get('gl') || '') : '' },
       email: mail, gsm: String(d.get('gsm') || '').trim(), straat: String(d.get('straat') || '').trim(),
-      rol: d.get('rol') === 'allebei' ? 'allebei' : 'vriend', bron: 'website', taal: lt
+      rol: d.get('rol') === 'allebei' ? 'allebei' : 'vriend', bron: 'website', taal: lt,
+      huisdieren: hd && hd.checked ? (String(d.get('hdn') || '').trim() || 'ja') : ''
     }).then(function (r) {
       var vak = f.closest('.vak');
       vak.querySelectorAll('[data-naam]').forEach(function (el) { el.textContent = r.kaart.v; });
