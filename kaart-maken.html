@@ -56,7 +56,7 @@
           <div class="teller" role="group" aria-labelledby="l-ki"><button type="button" data-t="ki" data-d="-1" aria-label="Een kind minder">−</button><output id="ki">0</output><button type="button" data-t="ki" data-d="1" aria-label="Een kind meer">+</button></div></div>
       </div>
       <p class="samen" id="samen" aria-live="polite"></p>
-      <div class="veld"><label for="gl">Voornamen van de andere gezinsleden (niet verplicht)</label><input id="gl" class="in" placeholder="bv. Leen, Lotte, Mats"><small>Alleen voornamen, geen achternaam of andere gegevens van kinderen.</small></div>
+      <div class="veld"><label for="gl">Voornamen van de andere gezinsleden (niet verplicht)</label><input id="gl" class="in" placeholder="Leen, Lotte, Mats"><small>(alleen voornamen, gescheiden door een komma: Leen, Lotte, Mats; geen achternaam of andere gegevens van kinderen)</small></div>
     </fieldset>
     <div class="veld"><label for="mail">E-mailadres (niet verplicht, maar nodig om de kaart later terug te halen in de app)</label><input id="mail" class="in" type="email" placeholder="naam@voorbeeld.be"></div>
     <div class="veld"><label for="tel">Gsm-nummer voor WhatsApp (niet verplicht)</label><input id="tel" class="in" type="tel" placeholder="0470 12 34 56"></div>
@@ -149,7 +149,7 @@
     var fout = document.getElementById('fout');
     if (!v) { fout.textContent = 'Vul minstens de voornaam in.'; return; }
     fout.textContent = '';
-    var gl = f.gl.value.split(',').map(function (x) { return x.trim(); }).filter(Boolean).join(', ');
+    var gl = f.gl.value.split(/\s*(?:,|;|\/|&|\+|\ben\b|\n)\s*/i).map(function (x) { x = x.replace(/\s+/g, ' ').trim(); return x ? x.charAt(0).toUpperCase() + x.slice(1) : ''; }).filter(Boolean).join(', ');
     var link = location.origin + '/lidkaart.html#k=' + b64url(JSON.stringify({ n: n, v: v, a: a, g: g, vo: tel.vo, ki: tel.ki, gl: gl }));
     var tekst = 'Dag ' + v + ', welkom bij de Vrienden van WaasUp! 🦊\n\n' +
       (aanpassen ? 'Hier is je aangepaste vriendenkaart (' + samenvatting(tel.vo, tel.ki) + '). Open deze link op je gsm, dan wordt je oude kaart vervangen:\n' : 'Hier is je digitale vriendenkaart' + (tel.vo + tel.ki > 1 ? ' voor ' + samenvatting(tel.vo, tel.ki) : '') + '. Open deze link op je gsm:\n') + link + '\n\n' +

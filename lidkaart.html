@@ -131,7 +131,7 @@
           <div><span id="l-vo">Volwassenen</span><div class="teller" role="group" aria-labelledby="l-vo"><button type="button" data-t="vo" data-d="-1" aria-label="Een volwassene minder">−</button><output id="t-vo">1</output><button type="button" data-t="vo" data-d="1" aria-label="Een volwassene meer">+</button></div></div>
           <div><span id="l-ki">Kinderen</span><div class="teller" role="group" aria-labelledby="l-ki"><button type="button" data-t="ki" data-d="-1" aria-label="Een kind minder">−</button><output id="t-ki">0</output><button type="button" data-t="ki" data-d="1" aria-label="Een kind meer">+</button></div></div>
         </div>
-        <div class="veld" id="gl-veld" hidden><label for="i-gl">Voornamen van de andere gezinsleden (niet verplicht)</label><input id="i-gl" class="in" placeholder="bv. Leen, Lotte, Mats"></div>
+        <div class="veld" id="gl-veld" hidden><label for="i-gl">Voornamen van de andere gezinsleden (niet verplicht)</label><input id="i-gl" class="in" placeholder="Leen, Lotte, Mats" autocapitalize="words"><small>(alleen voornamen, gescheiden door een komma: Leen, Lotte, Mats)</small></div>
       </fieldset>
       <label class="akkoord"><input type="checkbox" id="i-ok"><span>Ik geef WaasUp vzw toestemming om mijn gegevens te gebruiken om me te informeren over activiteiten. Ik kan me altijd uitschrijven. Lees de <a href="privacy.html">privacyverklaring</a>.</span></label>
       <p class="fout" id="i-fout" role="alert"></p>
@@ -323,6 +323,13 @@
     for (var i = 0; i < 4; i++) r += tekens.charAt(buf[i] % tekens.length);
     return 'WU-' + String(d.getFullYear()).slice(2) + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + r;
   }
+  // Gezinsleden altijd op dezelfde manier: "Leen, Lotte, Mats" (ook als iemand ; / & of "en" gebruikt)
+  function netteNamen(t) {
+    return String(t || '').split(/\s*(?:,|;|\/|&|\+|\ben\b|\band\b|\bet\b|\n)\s*/i).map(function (x) {
+      x = x.replace(/\s+/g, ' ').trim();
+      return x ? x.charAt(0).toUpperCase() + x.slice(1) : '';
+    }).filter(Boolean).join(', ');
+  }
   function geldigTot() { return (new Date().getFullYear() + 1) + '-12-31'; }
   var mailOk = function (m) { return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m); };
 
@@ -333,7 +340,7 @@
     if (!mailOk(mail)) { fout.textContent = 'Vul een geldig e-mailadres in.'; $('i-mail').focus(); return; }
     if (!$('i-ok').checked) { fout.textContent = 'Vink de toestemming aan om verder te gaan.'; return; }
     fout.textContent = '';
-    var gl = tel.vo + tel.ki > 1 ? $('i-gl').value.split(',').map(function (x) { return x.trim(); }).filter(Boolean).join(', ') : '';
+    var gl = tel.vo + tel.ki > 1 ? netteNamen($('i-gl').value) : '';
     var kaart = { n: nieuwNummer(), v: v, a: a, g: geldigTot(), vo: tel.vo, ki: tel.ki, gl: gl };
     // De kaart staat meteen op dit toestel, ook als het internet even wegvalt
     bewaar(kaart); toonKaart(kaart);
