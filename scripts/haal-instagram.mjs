@@ -76,3 +76,19 @@ if (uit !== oud) {
 } else {
   console.log('Geen nieuwe posts.');
 }
+
+// Wanneer vervalt de toegangssleutel? Het Schip toont dat als lampje, zodat een vervallen
+// sleutel niet ongemerkt het nieuwsblok stillegt. Enkel een datum, geen sleutel.
+try {
+  const d = (await haalJson(`${API}/debug_token?input_token=${encodeURIComponent(token)}&access_token=${encodeURIComponent(token)}`)).data || {};
+  const momenten = [d.expires_at, d.data_access_expires_at].filter(t => t > 0);
+  const status = JSON.stringify({
+    vervalt: momenten.length ? new Date(Math.min(...momenten) * 1000).toISOString().slice(0, 10) : 'nooit',
+    geldig: d.is_valid !== false,
+  }, null, 2) + '\n';
+  const pad = `${MAP_DATA}/instagram-status.json`;
+  const vorig = existsSync(pad) ? await readFile(pad, 'utf8') : '';
+  if (status !== vorig) await writeFile(pad, status);
+} catch (e) {
+  console.warn('Vervaldatum van de sleutel niet op te vragen:', e.message);
+}
